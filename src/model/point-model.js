@@ -24,7 +24,7 @@ export default class PointModel {
     // Генерация HTML для выбранных офферов
     const offersHtml = this.createOffersHtml(offers);
     const offersEditHtml = this.createOffersTemplate(allOffersForType, offers);
-    // const photosTemplate = this.createPhotosTemplate(tempPoint);
+    const photosTemplate = this.createPhotosTemplate(destination);
 
     return {
       ...tempPoint,
@@ -33,6 +33,7 @@ export default class PointModel {
       offers,
       offersHtml, // добавляем HTML-шаблон в объект
       offersEditHtml,
+      photosTemplate,
     };
   }
 
@@ -89,8 +90,7 @@ export default class PointModel {
   `;
   }
 
-  createPhotosTemplate(point) {
-    const { destination } = point;
+  createPhotosTemplate(destination) {
     const photosHtml = destination.pictures
       .map((picture) => {
         return `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`;

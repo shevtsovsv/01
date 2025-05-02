@@ -13,6 +13,7 @@ function createNewEventTemplate(point) {
     photosTemplate,
     favorite,
   } = point;
+
   const dFrom = humanizeEventDueDateEdit(dateFrom);
   const dTo = humanizeEventDueDateEdit(dateTo);
   return `
@@ -131,7 +132,7 @@ export default class NewEventsView {
     this.point = point;
   }
   getTemplate() {
-    return createNewEventTemplate(this.point[0]);
+    return createNewEventTemplate(this.point);
   }
 
   getElement() {

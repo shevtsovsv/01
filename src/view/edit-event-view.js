@@ -133,7 +133,7 @@ export default class EditEventsView {
     this.pointModel = pointModel;
   }
   getTemplate() {
-    return editEventTemplate(this.pointModel[0]);
+    return editEventTemplate(this.pointModel);
   }
 
   getElement() {

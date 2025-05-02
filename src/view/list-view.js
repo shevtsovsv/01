@@ -6,8 +6,6 @@ import {
 } from "../utils.js";
 
 function createListTemplate(point) {
-  console.log(point);
-
   const {
     type,
     destination,

@@ -24,16 +24,16 @@ export default class BoardPresenter {
     render(this.boardComponent, this.boardContainer);
     render(new SortsView(), this.boardComponent.getElement());
     render(
-      new NewEventsView(this.boardPoints),
+      new NewEventsView(this.boardPoints[0]),
       this.boardComponent.getElement()
     );
 
     render(this.eventListComponent, this.boardComponent.getElement());
     render(
-      new EditEventsView(this.boardPoints),
+      new EditEventsView(this.boardPoints[1]),
       this.eventListComponent.getElement()
     );
-    for (let i = 0; i < EVENT_COUNT; i++) {
+    for (let i = 2; i < EVENT_COUNT; i++) {
       render(
         new ListView({ point: this.boardPoints[i] }),
         this.eventListComponent.getElement()
