@@ -1,4 +1,5 @@
-import { createElement } from "../render.js";
+// import { createElement } from "../render.js";
+import AbstractView from "../framework/view/abstract-view.js";
 import { humanizeEventDueDateEdit } from "../utils.js";
 
 function createNewEventTemplate(point) {
@@ -127,23 +128,33 @@ function createNewEventTemplate(point) {
   `;
 }
 
-export default class NewEventsView {
-  constructor(point) {
-    this.point = point;
-  }
-  getTemplate() {
-    return createNewEventTemplate(this.point);
-  }
+// export default class NewEventsView {
+export default class TaskEditView extends AbstractView {
+  #point = null;
+  //   constructor(point) {
+  //     this.point = point;
+  //   }
+  constructor({ point }) {
+    super();
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-
-    return this.element;
+    this.#point = point;
   }
-
-  removeElement() {
-    this.element = null;
+  get template() {
+    return createNewEventTemplate(this.#point);
   }
+  //   getTemplate() {
+  //     return createNewEventTemplate(this.point);
+  //   }
+
+  //   getElement() {
+  //     if (!this.element) {
+  //       this.element = createElement(this.getTemplate());
+  //     }
+
+  //     return this.element;
+  //   }
+
+  //   removeElement() {
+  //     this.element = null;
+  //   }
 }

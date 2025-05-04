@@ -16,7 +16,8 @@
   // render(new ListView(), siteSortsElement);
 }
 import FilterView from "./view/filters-view.js";
-import { render } from "./render.js";
+// import { render } from "./render.js";
+import { render } from "./framework/render";
 import BoardPresenter from "./presenter/board-presenter.js";
 // import EventModel from "./model/event-model.js";
 import PointModel from "./model/point-model.js";

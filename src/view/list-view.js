@@ -1,4 +1,6 @@
-import { createElement } from "../render.js";
+// import { createElement } from "../render.js";
+
+import AbstractView from "../framework/view/abstract-view.js";
 import {
   humanizeEventDueDate,
   humanizeEventTime,
@@ -57,24 +59,26 @@ function createListTemplate(point) {
   `;
 }
 
-export default class ListView {
+export default class ListView extends AbstractView {
+  #point;
   constructor({ point }) {
-    this.point = point;
+    super();
+    this.#point = point;
   }
 
-  getTemplate() {
-    return createListTemplate(this.point);
+  get template() {
+    return createListTemplate(this.#point);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
+  //   getElement() {
+  //     if (!this.element) {
+  //       this.element = createElement(this.getTemplate());
+  //     }
 
-    return this.element;
-  }
+  //     return this.element;
+  //   }
 
-  removeElement() {
-    this.element = null;
-  }
+  //   removeElement() {
+  //     this.element = null;
+  //   }
 }
