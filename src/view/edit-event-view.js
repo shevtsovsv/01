@@ -129,7 +129,6 @@ function editEventTemplate(point) {
   `;
 }
 
-// export default class EditEventsView {
 export default class TaskEditView extends AbstractView {
   #point = null;
   constructor({ point }) {
@@ -140,23 +139,4 @@ export default class TaskEditView extends AbstractView {
   get template() {
     return editEventTemplate(this.#point);
   }
-
-  //   constructor(pointModel) {
-  //     this.pointModel = pointModel;
-  //   }
-  //   getTemplate() {
-  //     return editEventTemplate(this.pointModel);
-  //   }
-
-  //   getElement() {
-  //     if (!this.element) {
-  //       this.element = createElement(this.getTemplate());
-  //     }
-
-  //     return this.element;
-  //   }
-
-  //   removeElement() {
-  //     this.element = null;
-  //   }
 }
