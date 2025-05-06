@@ -51,6 +51,6 @@ const TYPE = [
   },
 ];
 
-const EVENT_COUNT = 5;
+const EVENT_COUNT = 3;
 
 export { TYPE, EVENT_COUNT };

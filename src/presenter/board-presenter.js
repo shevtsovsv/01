@@ -29,22 +29,29 @@ export default class BoardPresenter {
     // render(new SortsView(), this.boardComponent.getElement());
 
     render(new SortsView(), this.#boardComponent.element);
-    render(
-      new NewEventsView({ point: this.#boardPoints[0] }),
-      this.#boardComponent.element
-    );
-    console.log(this.#boardPoints[0]);
+    // render(
+    //   new NewEventsView({ point: this.#boardPoints[0] }),
+    //   this.#boardComponent.element
+    // );
 
     render(this.#eventListComponent, this.#boardComponent.element);
-    render(
-      new EditEventsView({ point: this.#boardPoints[1] }),
-      this.#eventListComponent.element
-    );
-    for (let i = 2; i < EVENT_COUNT; i++) {
-      render(
-        new ListView({ point: this.#boardPoints[i] }),
-        this.#eventListComponent.element
-      );
+    // render(
+    //   new EditEventsView({ point: this.#boardPoints[1] }),
+    //   this.#eventListComponent.element
+    // );
+    // for (let i = 2; i < EVENT_COUNT; i++) {
+    //   render(
+    //     new ListView({ point: this.#boardPoints[i] }),
+    //     this.#eventListComponent.element
+    //   );
+    // }
+    for (let i = 0; i < this.#boardPoints.length; i++) {
+      this.#renderPoint(this.#boardPoints[i]);
     }
+  }
+  #renderPoint(point) {
+    const pointComponent = new ListView({ point });
+
+    render(pointComponent, this.#eventListComponent.element);
   }
 }
