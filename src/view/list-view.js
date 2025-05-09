@@ -49,7 +49,7 @@ function createListTemplate(point) {
                     <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
                   </svg>
                 </button>
-                <button class="event__rollup-btn" type="button">
+                <button class="event__rollup-btn card__btn--edit" type="button">
                   <span class="visually-hidden">Open event</span>
                 </button>
               </div>
@@ -59,12 +59,22 @@ function createListTemplate(point) {
 
 export default class ListView extends AbstractView {
   #point;
-  constructor({ point }) {
+  #handleEditClick = null;
+  constructor({ point, onEditClick }) {
     super();
     this.#point = point;
+    this.#handleEditClick = onEditClick;
+
+    this.element
+      .querySelector(".card__btn--edit")
+      .addEventListener("click", this.#editClickHandler);
   }
 
   get template() {
     return createListTemplate(this.#point);
   }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditClick();
+  };
 }

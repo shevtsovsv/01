@@ -7,8 +7,7 @@ import BoardView from "../view/board-view.js";
 import EventListView from "../view/event-list-view.js";
 import LoadMoreButtonView from "../view/load-more-button-view.js";
 
-// import { render } from "../render.js";
-import { render, remove } from "../framework/render";
+import { render, remove, replace } from "../framework/render";
 import { EVENT_COUNT } from "../const.js";
 
 const POINT_COUNT_PER_STEP = 5;
@@ -32,25 +31,11 @@ export default class BoardPresenter {
     this.#boardPoints = structuredClone(this.#pointModel.getPoints());
 
     render(this.#boardComponent, this.#boardContainer);
-    // render(new SortsView(), this.boardComponent.getElement());
 
     render(new SortsView(), this.#boardComponent.element);
-    // render(
-    //   new NewEventsView({ point: this.#boardPoints[0] }),
-    //   this.#boardComponent.element
-    // );
 
     render(this.#eventListComponent, this.#boardComponent.element);
-    // render(
-    //   new EditEventsView({ point: this.#boardPoints[1] }),
-    //   this.#eventListComponent.element
-    // );
-    // for (let i = 2; i < EVENT_COUNT; i++) {
-    //   render(
-    //     new ListView({ point: this.#boardPoints[i] }),
-    //     this.#eventListComponent.element
-    //   );
-    // }
+
     for (
       let i = 0;
       i < Math.min(this.#boardPoints.length, POINT_COUNT_PER_STEP);
@@ -80,7 +65,35 @@ export default class BoardPresenter {
   };
 
   #renderPoint(point) {
-    const pointComponent = new ListView({ point });
+    const escKeyDownHandler = (evt) => {
+      if (evt.key === "Escape") {
+        evt.preventDefault();
+        replaceFormToCard();
+        document.removeEventListener("keydown", escKeyDownHandler);
+      }
+    };
+    const pointComponent = new ListView({
+      point,
+      onEditClick: () => {
+        replaceCardToForm();
+        document.addEventListener("keydown", escKeyDownHandler);
+      },
+    });
+    const pointEditComponent = new EditEventsView({
+      point,
+      onFormSubmit: () => {
+        replaceFormToCard();
+        document.removeEventListener("keydown", escKeyDownHandler);
+      },
+    });
+
+    function replaceCardToForm() {
+      replace(pointEditComponent, pointComponent);
+    }
+
+    function replaceFormToCard() {
+      replace(pointComponent, pointEditComponent);
+    }
 
     render(pointComponent, this.#eventListComponent.element);
   }

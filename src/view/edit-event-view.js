@@ -1,6 +1,17 @@
 import AbstractView from "../framework/view/abstract-view.js";
 import { humanizeEventDueDateEdit } from "../utils.js";
 
+const BLANK_POINT = {
+  id: null,
+  basePrice: 0,
+  dateFrom: null,
+  dateTo: null,
+  destination: null,
+  isFavorite: false,
+  offers: [],
+  type: null,
+};
+
 function editEventTemplate(point) {
   const {
     type,
@@ -107,7 +118,7 @@ function editEventTemplate(point) {
 
                   <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
                   <button class="event__reset-btn" type="reset">Delete</button>
-                  <button class="event__rollup-btn" type="button">
+                  <button class="event__rollup-btn card__btn--edit" type="button">
                     <span class="visually-hidden">Open event</span>
                   </button>
                 </header>
@@ -130,11 +141,22 @@ function editEventTemplate(point) {
 
 export default class TaskEditView extends AbstractView {
   #point = null;
-  constructor({ point }) {
+  #handleFormSubmit = null;
+  constructor({ point = BLANK_POINT, onFormSubmit }) {
     super();
     this.#point = point;
+    this.#handleFormSubmit = onFormSubmit;
+
+    this.element
+      .querySelector("form")
+      .addEventListener("submit", this.#formSubmitHandler);
   }
   get template() {
     return editEventTemplate(this.#point);
   }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFormSubmit();
+  };
 }
