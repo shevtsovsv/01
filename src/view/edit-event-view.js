@@ -1,4 +1,3 @@
-// import { createElement } from "../render.js";
 import AbstractView from "../framework/view/abstract-view.js";
 import { humanizeEventDueDateEdit } from "../utils.js";
 
@@ -133,7 +132,6 @@ export default class TaskEditView extends AbstractView {
   #point = null;
   constructor({ point }) {
     super();
-
     this.#point = point;
   }
   get template() {
