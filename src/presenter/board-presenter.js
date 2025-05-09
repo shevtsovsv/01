@@ -29,26 +29,7 @@ export default class BoardPresenter {
 
   init() {
     this.#boardPoints = structuredClone(this.#pointModel.getPoints());
-
-    render(this.#boardComponent, this.#boardContainer);
-
-    render(new SortsView(), this.#boardComponent.element);
-
-    render(this.#eventListComponent, this.#boardComponent.element);
-
-    for (
-      let i = 0;
-      i < Math.min(this.#boardPoints.length, POINT_COUNT_PER_STEP);
-      i++
-    ) {
-      this.#renderPoint(this.#boardPoints[i]);
-    }
-    if (this.#boardPoints.length > POINT_COUNT_PER_STEP) {
-      this.#loadMoreButtonComponent = new LoadMoreButtonView({
-        onClick: this.#handleLoadMoreButtonClick,
-      });
-      render(this.#loadMoreButtonComponent, this.#boardComponent.element);
-    }
+    this.#renderBoard();
   }
 
   #handleLoadMoreButtonClick = () => {
@@ -96,5 +77,26 @@ export default class BoardPresenter {
     }
 
     render(pointComponent, this.#eventListComponent.element);
+  }
+  #renderBoard() {
+    render(this.#boardComponent, this.#boardContainer);
+
+    render(new SortsView(), this.#boardComponent.element);
+
+    render(this.#eventListComponent, this.#boardComponent.element);
+
+    for (
+      let i = 0;
+      i < Math.min(this.#boardPoints.length, POINT_COUNT_PER_STEP);
+      i++
+    ) {
+      this.#renderPoint(this.#boardPoints[i]);
+    }
+    if (this.#boardPoints.length > POINT_COUNT_PER_STEP) {
+      this.#loadMoreButtonComponent = new LoadMoreButtonView({
+        onClick: this.#handleLoadMoreButtonClick,
+      });
+      render(this.#loadMoreButtonComponent, this.#boardComponent.element);
+    }
   }
 }
