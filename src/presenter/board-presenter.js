@@ -6,9 +6,9 @@ import EditEventsView from "../view/edit-event-view.js";
 import BoardView from "../view/board-view.js";
 import EventListView from "../view/event-list-view.js";
 import LoadMoreButtonView from "../view/load-more-button-view.js";
+import NoPointView from "../view/no-point-view.js";
 
 import { render, remove, replace } from "../framework/render";
-import { EVENT_COUNT } from "../const.js";
 
 const POINT_COUNT_PER_STEP = 5;
 
@@ -78,9 +78,13 @@ export default class BoardPresenter {
 
     render(pointComponent, this.#eventListComponent.element);
   }
+
   #renderBoard() {
     render(this.#boardComponent, this.#boardContainer);
-
+    if (this.#boardPoints.every((point) => point.isArchive)) {
+      render(new NoPointView(), this.#boardComponent.element);
+      return;
+    }
     render(new SortsView(), this.#boardComponent.element);
 
     render(this.#eventListComponent, this.#boardComponent.element);
