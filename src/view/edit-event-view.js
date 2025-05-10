@@ -142,14 +142,20 @@ function editEventTemplate(point) {
 export default class TaskEditView extends AbstractView {
   #point = null;
   #handleFormSubmit = null;
-  constructor({ point = BLANK_POINT, onFormSubmit }) {
+  handleEditClick = null;
+  constructor({ point = BLANK_POINT, onFormSubmit, onEditClick }) {
     super();
     this.#point = point;
     this.#handleFormSubmit = onFormSubmit;
+    this.handleEditClick = onEditClick;
 
     this.element
       .querySelector("form")
       .addEventListener("submit", this.#formSubmitHandler);
+
+    this.element
+      .querySelector(".card__btn--edit")
+      .addEventListener("click", this.#editClickHandler);
   }
   get template() {
     return editEventTemplate(this.#point);
@@ -158,5 +164,10 @@ export default class TaskEditView extends AbstractView {
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
     this.#handleFormSubmit();
+  };
+
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this.handleEditClick();
   };
 }
