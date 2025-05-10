@@ -85,6 +85,10 @@ export default class BoardPresenter {
         replaceFormToCard();
         document.removeEventListener("keydown", escKeyDownHandler);
       },
+      onEditClick: () => {
+        replaceFormToCard();
+        document.removeEventListener("keydown", escKeyDownHandler);
+      },
     });
 
     function replaceCardToForm() {
