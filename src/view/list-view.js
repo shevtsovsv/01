@@ -3,7 +3,7 @@ import {
   humanizeEventDueDate,
   humanizeEventTime,
   formatDuration,
-} from "../utils.js";
+} from "../utils/task.js";
 
 function createListTemplate(point) {
   const {

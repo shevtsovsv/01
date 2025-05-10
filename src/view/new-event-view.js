@@ -1,5 +1,5 @@
 import AbstractView from "../framework/view/abstract-view.js";
-import { humanizeEventDueDateEdit } from "../utils.js";
+import { humanizeEventDueDateEdit } from "../utils/task.js";
 
 function createNewEventTemplate(point) {
   const {
