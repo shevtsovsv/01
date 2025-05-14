@@ -4,7 +4,7 @@ import {
   humanizeEventTime,
   formatDuration,
 } from "../utils/task.js";
-
+let c = 0;
 function createListTemplate(point) {
   const {
     type,
@@ -15,6 +15,7 @@ function createListTemplate(point) {
     offersHtml,
     favorite,
   } = point;
+  c++;
 
   const date = humanizeEventDueDate(dateFrom);
   const timeStart = humanizeEventTime(dateFrom);

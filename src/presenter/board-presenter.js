@@ -1,14 +1,13 @@
 import SortsView from "../view/sorts-view";
 import NewEventsView from "../view/new-event-view.js";
-import ListView from "../view/list-view.js";
-import EditEventsView from "../view/edit-event-view.js";
 
 import BoardView from "../view/board-view.js";
 import EventListView from "../view/event-list-view.js";
 import LoadMoreButtonView from "../view/load-more-button-view.js";
 import NoPointView from "../view/no-point-view.js";
 
-import { render, RenderPosition, replace, remove } from "../framework/render";
+import { render, RenderPosition, remove } from "../framework/render";
+import PointPresenter from "./point-presenter.js";
 
 const POINT_COUNT_PER_STEP = 5;
 
@@ -20,7 +19,7 @@ export default class BoardPresenter {
   #boardPoints = [];
 
   #sortComponent = new SortsView();
-  #noTaskComponent = new NoPointView();
+  #noPointComponent = new NoPointView();
 
   #loadMoreButtonComponent = null;
   #renderedPointCount = POINT_COUNT_PER_STEP;
@@ -38,9 +37,9 @@ export default class BoardPresenter {
   }
 
   #handleLoadMoreButtonClick = () => {
-    this.#renderedPointCount(
+    this.#renderPoints(
       this.#renderedPointCount,
-      this.#renderedPointCount + TASK_COUNT_PER_STEP
+      this.#renderedPointCount + POINT_COUNT_PER_STEP
     );
     this.#renderedPointCount += POINT_COUNT_PER_STEP;
     if (this.#renderedPointCount >= this.#boardPoints.length) {
@@ -57,46 +56,16 @@ export default class BoardPresenter {
   }
 
   #renderPoint(point) {
-    const escKeyDownHandler = (evt) => {
-      if (evt.key === "Escape") {
-        evt.preventDefault();
-        replaceFormToCard();
-        document.removeEventListener("keydown", escKeyDownHandler);
-      }
-    };
-    const pointComponent = new ListView({
-      point,
-      onEditClick: () => {
-        replaceCardToForm();
-        document.addEventListener("keydown", escKeyDownHandler);
-      },
+    const taskPresenter = new PointPresenter({
+      pointListContainer: this.#eventListComponent.element,
     });
-    const pointEditComponent = new EditEventsView({
-      point,
-      onFormSubmit: () => {
-        replaceFormToCard();
-        document.removeEventListener("keydown", escKeyDownHandler);
-      },
-      onEditClick: () => {
-        replaceFormToCard();
-        document.removeEventListener("keydown", escKeyDownHandler);
-      },
-    });
-
-    function replaceCardToForm() {
-      replace(pointEditComponent, pointComponent);
-    }
-
-    function replaceFormToCard() {
-      replace(pointComponent, pointEditComponent);
-    }
-
-    render(pointComponent, this.#eventListComponent.element);
+    taskPresenter.init(point);
   }
-  #renderTasks(from, to) {
+
+  #renderPoints(from, to) {
     this.#boardPoints
       .slice(from, to)
-      .forEach((task) => this.#renderPoint(task));
+      .forEach((point) => this.#renderPoint(point));
   }
 
   #renderLoadMoreButton() {
@@ -107,9 +76,9 @@ export default class BoardPresenter {
     render(this.#loadMoreButtonComponent, this.#boardComponent.element);
   }
 
-  #renderNoTasks() {
+  #renderNoPoints() {
     render(
-      this.#noTaskComponent,
+      this.#noPointComponent,
       this.#boardComponent.element,
       RenderPosition.AFTERBEGIN
     );
@@ -123,9 +92,9 @@ export default class BoardPresenter {
   //     render(this.#loadMoreButtonComponent, this.#boardComponent.element);
   //   }
 
-  #renderTaskList() {
+  #renderPointList() {
     render(this.#eventListComponent, this.#boardComponent.element);
-    this.#renderTasks(
+    this.#renderPoints(
       0,
       Math.min(this.#boardPoints.length, POINT_COUNT_PER_STEP)
     );
@@ -139,11 +108,11 @@ export default class BoardPresenter {
     render(this.#boardComponent, this.#boardContainer);
 
     if (this.#boardPoints.every((task) => task.isArchive)) {
-      this.#renderNoTasks();
+      this.#renderNoPoints();
       return;
     }
 
     this.#renderSort();
-    this.#renderTaskList();
+    this.#renderPointList();
   }
 }
