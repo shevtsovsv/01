@@ -111,7 +111,7 @@ export default class PointModel {
 </div>`.trim();
   }
 
-  getPoints() {
+  get points() {
     return this.#points;
   }
 }

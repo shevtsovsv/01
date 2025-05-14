@@ -5,7 +5,7 @@ const mockPoints = [
   {
     id: "81a1e334-c2f2-4873-baba-b1aac209a858",
     basePrice: 1766,
-    dateFrom: "2027-01-21T14:00:22.952Z",
+    dateFrom: "2025-01-21T14:00:22.952Z",
     dateTo: "2027-01-23T14:00:22.952Z",
     destination: "f77f73b4-f875-4af7-921d-d85f1032954b",
     isFavorite: false,
@@ -15,7 +15,7 @@ const mockPoints = [
   {
     id: "58b3da23-5e82-4cb5-86b7-56bc0c845dd5",
     basePrice: 6847,
-    dateFrom: "2027-01-23T14:00:22.952Z",
+    dateFrom: "2025-01-23T14:00:22.952Z",
     dateTo: "2027-01-24T02:00:22.952Z",
     destination: "f77f73b4-f875-4af7-921d-d85f1032954b",
     isFavorite: false,
@@ -25,7 +25,7 @@ const mockPoints = [
   {
     id: "35fdf7ec-677d-4ac7-bb1d-e1e4a989181d",
     basePrice: 7633,
-    dateFrom: "2027-01-24T02:00:22.952Z",
+    dateFrom: "2025-01-24T02:00:22.952Z",
     dateTo: "2027-01-25T00:00:22.952Z",
     destination: "10ae7307-2c58-4253-9132-17f8cbaf4bdb",
     isFavorite: false,
@@ -35,7 +35,7 @@ const mockPoints = [
   {
     id: "3499aac7-1f4a-4e4c-9395-4e307f6c9826",
     basePrice: 2736,
-    dateFrom: "2027-01-25T00:00:22.952Z",
+    dateFrom: "2025-01-25T00:00:22.952Z",
     dateTo: "2027-01-26T23:00:22.952Z",
     destination: "f77f73b4-f875-4af7-921d-d85f1032954b",
     isFavorite: true,

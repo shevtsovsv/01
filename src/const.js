@@ -1,3 +1,10 @@
 const EVENT_COUNT = 25;
 
-export { EVENT_COUNT };
+const FilterType = {
+  EVERYTHING: "Everything",
+  FUTURE: "future",
+  PRESENT: "present",
+  PAST: "past",
+};
+
+export { EVENT_COUNT, FilterType };

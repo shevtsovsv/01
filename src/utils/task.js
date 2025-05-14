@@ -34,9 +34,36 @@ function formatDuration(dateFrom, dateTo) {
   return `${d}${h} ${m}`;
 }
 
+// Функции для проверки состояния задачи
+function isPointFuture(point) {
+  return (
+    point.dateFrom && dayjs(point.dateFrom).isAfter(dayjs(), "day") // &&  !point.isArchive
+  );
+}
+
+function isPointPresent(point) {
+  return (
+    point.dateFrom && dayjs(point.dateFrom).isSame(dayjs(), "day") // &&    !point.isArchive
+  );
+}
+
+function isPointPast(point) {
+  return (
+    point.dateFrom && dayjs().isAfter(point.dateFrom, "day") //&& !point.isArchive
+  );
+}
+
+function isPointEverything(point) {
+  return true; // Все задачи, без фильтрации
+}
+
 export {
   humanizeEventDueDate,
   humanizeEventDueDateEdit,
   humanizeEventTime,
   formatDuration,
+  isPointFuture,
+  isPointPresent,
+  isPointPast,
+  isPointEverything,
 };

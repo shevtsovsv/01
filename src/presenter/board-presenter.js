@@ -28,7 +28,7 @@ export default class BoardPresenter {
   }
 
   init() {
-    this.#boardPoints = structuredClone(this.#pointModel.getPoints());
+    this.#boardPoints = structuredClone(this.#pointModel.points);
     this.#renderBoard();
   }
 
