@@ -1,7 +1,7 @@
 import ListView from "../view/list-view.js";
 import EditEventsView from "../view/edit-event-view.js";
 
-import { render, replace } from "../framework/render";
+import { render, replace, remove } from "../framework/render";
 
 export default class PointPresenter {
   #pointListContainer = null;
@@ -15,6 +15,9 @@ export default class PointPresenter {
 
   init(point) {
     this.#point = point;
+    const prevPointComponent = this.#pointComponent;
+    const prevPointEditComponent = this.#pointEditComponent;
+
     this.#pointComponent = new ListView({
       point: this.#point,
       onEditClick: this.#handleEditClick,
@@ -29,7 +32,30 @@ export default class PointPresenter {
       //   onEditClick: this.#replaceCardToForm.bind(this),
     });
 
-    render(this.#pointComponent, this.#pointListContainer);
+    // render(this.#pointComponent, this.#pointListContainer);
+
+    if (prevPointComponent === null || prevPointEditComponent === null) {
+      render(this.#pointComponent, this.#pointListContainer);
+      return;
+    }
+
+    // Проверка на наличие в DOM необходима,
+    // чтобы не пытаться заменить то, что не было отрисовано
+    if (this.#pointListContainer.contains(prevPointComponent.element)) {
+      replace(this.#pointComponent, prevPointComponent);
+    }
+
+    if (this.#pointListContainer.contains(prevPointEditComponent.element)) {
+      replace(this.#pointEditComponent, prevPointEditComponent);
+    }
+
+    remove(prevPointComponent);
+    remove(prevPointEditComponent);
+  }
+
+  destroy() {
+    remove(this.#pointComponent);
+    remove(this.#pointEditComponent);
   }
   #replaceCardToForm() {
     replace(this.#pointEditComponent, this.#pointComponent);
