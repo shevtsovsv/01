@@ -25,8 +25,7 @@ function editEventTemplate(point) {
   } = point;
   const dFrom = humanizeEventDueDateEdit(dateFrom);
   const dTo = humanizeEventDueDateEdit(dateTo);
-  return `
- 	<li class="trip-events__item">
+  return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
                 <header class="event__header">
                   <div class="event__type-wrapper">
@@ -142,12 +141,12 @@ function editEventTemplate(point) {
 export default class TaskEditView extends AbstractView {
   #point = null;
   #handleFormSubmit = null;
-  handleEditClick = null;
+  #handleEditClick = null;
   constructor({ point = BLANK_POINT, onFormSubmit, onEditClick }) {
     super();
     this.#point = point;
     this.#handleFormSubmit = onFormSubmit;
-    this.handleEditClick = onEditClick;
+    this.#handleEditClick = onEditClick;
 
     this.element
       .querySelector("form")
@@ -155,6 +154,7 @@ export default class TaskEditView extends AbstractView {
 
     this.element
       .querySelector(".card__btn--edit")
+      //   .addEventListener("click", () => alert("ggg"));
       .addEventListener("click", this.#editClickHandler);
   }
   get template() {
@@ -168,6 +168,8 @@ export default class TaskEditView extends AbstractView {
 
   #editClickHandler = (evt) => {
     evt.preventDefault();
-    this.handleEditClick();
+    this.#handleEditClick();
+
+    // alert(111);
   };
 }

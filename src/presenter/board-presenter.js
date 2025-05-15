@@ -106,8 +106,10 @@ export default class BoardPresenter {
 
   #renderBoard() {
     render(this.#boardComponent, this.#boardContainer);
-
-    if (this.#boardPoints.every((task) => task.isArchive)) {
+    if (
+      //   this.#boardPoints.length == 0 ||
+      this.#boardPoints.every((point) => point.isArchive)
+    ) {
       this.#renderNoPoints();
       return;
     }

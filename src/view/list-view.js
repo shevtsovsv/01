@@ -65,7 +65,6 @@ export default class ListView extends AbstractView {
     super();
     this.#point = point;
     this.#handleEditClick = onEditClick;
-
     this.element
       .querySelector(".card__btn--edit")
       .addEventListener("click", this.#editClickHandler);

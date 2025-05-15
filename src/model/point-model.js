@@ -19,9 +19,10 @@ export default class PointModel {
 
   #createPoint() {
     const tempPoint = getRandomPoint();
-    const destination = this.#destinationModel.getDestinationById(
-      tempPoint.destination
-    );
+    const destination =
+      tempPoint != undefined
+        ? this.#destinationModel.getDestinationById(tempPoint.destination)
+        : "";
     const allOffersForType = this.#offersModel.getOffersByType(tempPoint.type);
     const offers = (allOffersForType ?? []).filter((offer) =>
       tempPoint.offers.includes(offer.id)

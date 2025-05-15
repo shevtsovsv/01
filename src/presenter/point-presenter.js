@@ -22,6 +22,11 @@ export default class PointPresenter {
     this.#pointEditComponent = new EditEventsView({
       point: this.#point,
       onFormSubmit: this.#handleFormSubmit,
+      onEditClick: () => {
+        replace(this.#pointComponent, this.#pointEditComponent);
+        document.removeEventListener("keydown", this.#escKeyDownHandler);
+      },
+      //   onEditClick: this.#replaceCardToForm.bind(this),
     });
 
     render(this.#pointComponent, this.#pointListContainer);
