@@ -8,6 +8,7 @@ import NoPointView from "../view/no-point-view.js";
 
 import { render, RenderPosition, remove } from "../framework/render";
 import PointPresenter from "./point-presenter.js";
+import { updateItem } from "../utils/common.js";
 
 const POINT_COUNT_PER_STEP = 5;
 
@@ -46,6 +47,11 @@ export default class BoardPresenter {
     if (this.#renderedPointCount >= this.#boardPoints.length) {
       remove(this.#loadMoreButtonComponent);
     }
+  };
+
+  #handlePointChange = (updatedPoint) => {
+    this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
+    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
   };
 
   #renderSort() {
