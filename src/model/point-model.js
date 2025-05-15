@@ -15,6 +15,7 @@ export default class PointModel {
     this.#points = Array.from({ length: getLengthPoints() }, () =>
       this.#createPoint()
     );
+    console.log(this.#points);
   }
 
   #createPoint() {

@@ -23,6 +23,7 @@ export default class BoardPresenter {
 
   #loadMoreButtonComponent = null;
   #renderedPointCount = POINT_COUNT_PER_STEP;
+  #pointPresenters = new Map();
 
   #renderTask;
 
@@ -56,10 +57,11 @@ export default class BoardPresenter {
   }
 
   #renderPoint(point) {
-    const taskPresenter = new PointPresenter({
+    const pointPresenter = new PointPresenter({
       pointListContainer: this.#eventListComponent.element,
     });
-    taskPresenter.init(point);
+    pointPresenter.init(point);
+    this.#pointPresenters.set(point.id, pointPresenter);
   }
 
   #renderPoints(from, to) {
@@ -91,6 +93,15 @@ export default class BoardPresenter {
 
   //     render(this.#loadMoreButtonComponent, this.#boardComponent.element);
   //   }
+
+  #clearTaskList() {
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.forEach((presenter) => presenter.destroy());
+    this.#pointPresenters.clear();
+    this.#pointPresenters.clear();
+    this.#renderedPointCount = POINT_COUNT_PER_STEP;
+    remove(this.#loadMoreButtonComponent);
+  }
 
   #renderPointList() {
     render(this.#eventListComponent, this.#boardComponent.element);

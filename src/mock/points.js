@@ -1,4 +1,5 @@
 import { getRandomArrayElement } from "../utils/common.js";
+import { nanoid } from "nanoid";
 
 const mockPoints0 = [];
 const mockPoints = [
@@ -302,7 +303,10 @@ const mockPoints = [
 ];
 
 function getRandomPoint() {
-  return getRandomArrayElement(mockPoints);
+  return {
+    id: nanoid(),
+    ...getRandomArrayElement(mockPoints),
+  };
 }
 function getLengthPoints() {
   return mockPoints.length;
