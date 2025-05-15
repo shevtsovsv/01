@@ -65,6 +65,7 @@ export default class BoardPresenter {
   #renderPoint(point) {
     const pointPresenter = new PointPresenter({
       pointListContainer: this.#eventListComponent.element,
+      onDataChange: this.#handlePointChange,
     });
     pointPresenter.init(point);
     this.#pointPresenters.set(point.id, pointPresenter);
@@ -100,7 +101,7 @@ export default class BoardPresenter {
   //     render(this.#loadMoreButtonComponent, this.#boardComponent.element);
   //   }
 
-  #clearTaskList() {
+  #clearPointList() {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();

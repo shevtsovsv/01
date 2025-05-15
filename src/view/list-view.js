@@ -61,13 +61,24 @@ function createListTemplate(point) {
 export default class ListView extends AbstractView {
   #point;
   #handleEditClick = null;
-  constructor({ point, onEditClick }) {
+  #handleFavoriteClick = null;
+  #handleArchiveClick = null;
+
+  constructor({ point, onEditClick, onFavoriteClick, onArchiveClick }) {
     super();
     this.#point = point;
     this.#handleEditClick = onEditClick;
+    this.#handleFavoriteClick = onFavoriteClick;
+    this.#handleArchiveClick = onArchiveClick;
     this.element
       .querySelector(".card__btn--edit")
       .addEventListener("click", this.#editClickHandler);
+    // this.element
+    //   .querySelector(".card__btn--favorites")
+    //   .addEventListener("click", this.#favoriteClickHandler);
+    // this.element
+    //   .querySelector(".card__btn--archive")
+    //   .addEventListener("click", this.#archiveClickHandler);
   }
 
   get template() {
@@ -76,5 +87,14 @@ export default class ListView extends AbstractView {
   #editClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleEditClick();
+  };
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleFavoriteClick();
+  };
+
+  #archiveClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleArchiveClick();
   };
 }
