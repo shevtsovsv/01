@@ -7,4 +7,11 @@ const FilterType = {
   PAST: "past",
 };
 
-export { EVENT_COUNT, FilterType };
+const SortType = {
+  DEFAULT: "default",
+  DATE: "date",
+  TIME: "time",
+  PRICE: "price",
+};
+
+export { EVENT_COUNT, FilterType, SortType };
