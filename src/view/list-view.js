@@ -4,7 +4,7 @@ import {
   humanizeEventTime,
   formatDuration,
 } from "../utils/task.js";
-let c = 0;
+
 function createListTemplate(point) {
   const {
     type,
@@ -13,13 +13,15 @@ function createListTemplate(point) {
     dateTo,
     basePrice,
     offersHtml,
-    favorite,
+    isFavorite,
   } = point;
-  c++;
 
   const date = humanizeEventDueDate(dateFrom);
   const timeStart = humanizeEventTime(dateFrom);
   const timeEnd = humanizeEventTime(dateTo);
+  const favoriteClassName = isFavorite
+    ? "event__favorite-btn event__favorite-btn--active"
+    : "event__favorite-btn";
   return `
   		<li class="trip-events__item">
               <div class="event">
@@ -44,7 +46,7 @@ function createListTemplate(point) {
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
                 ${offersHtml}
-                <button class="event__favorite-btn" type="button">
+                <button class="${favoriteClassName}" type="button">
                   <span class="visually-hidden">Add to favorite</span>
                   <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
                     <path d="M14 21l-8.22899 4.3262 1.57159-9.1631L.685209 9.67376 9.8855 8.33688 14 0l4.1145 8.33688 9.2003 1.33688-6.6574 6.48934 1.5716 9.1631L14 21z"/>
@@ -62,23 +64,19 @@ export default class ListView extends AbstractView {
   #point;
   #handleEditClick = null;
   #handleFavoriteClick = null;
-  #handleArchiveClick = null;
 
-  constructor({ point, onEditClick, onFavoriteClick, onArchiveClick }) {
+  constructor({ point, onEditClick, onFavoriteClick }) {
     super();
     this.#point = point;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
-    this.#handleArchiveClick = onArchiveClick;
+
     this.element
       .querySelector(".card__btn--edit")
       .addEventListener("click", this.#editClickHandler);
-    // this.element
-    //   .querySelector(".card__btn--favorites")
-    //   .addEventListener("click", this.#favoriteClickHandler);
-    // this.element
-    //   .querySelector(".card__btn--archive")
-    //   .addEventListener("click", this.#archiveClickHandler);
+    this.element
+      .querySelector(".event__favorite-btn")
+      .addEventListener("click", this.#favoriteClickHandler);
   }
 
   get template() {
@@ -91,10 +89,5 @@ export default class ListView extends AbstractView {
   #favoriteClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleFavoriteClick();
-  };
-
-  #archiveClickHandler = (evt) => {
-    evt.preventDefault();
-    this.#handleArchiveClick();
   };
 }

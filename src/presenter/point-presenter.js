@@ -24,7 +24,6 @@ export default class PointPresenter {
       point: this.#point,
       onEditClick: this.#handleEditClick,
       onFavoriteClick: this.#handleFavoriteClick,
-      onArchiveClick: this.#handleArchiveClick,
     });
     this.#pointEditComponent = new EditEventsView({
       point: this.#point,
@@ -87,17 +86,11 @@ export default class PointPresenter {
       ...this.#point,
       isFavorite: !this.#point.isFavorite,
     });
+    console.log(this.#point);
   };
 
-  #handleArchiveClick = () => {
-    this.#handleDataChange({
-      ...this.#point,
-      isArchive: !this.#point.isArchive,
-    });
-  };
-
-  #handleFormSubmit = (task) => {
-    this.#handleDataChange(task);
+  #handleFormSubmit = (point) => {
+    this.#handleDataChange(point);
     this.#replaceFormToCard();
   };
 }

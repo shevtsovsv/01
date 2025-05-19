@@ -50,6 +50,8 @@ export default class BoardPresenter {
   };
 
   #handlePointChange = (updatedPoint) => {
+    console.log(222);
+
     this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
     this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
   };
