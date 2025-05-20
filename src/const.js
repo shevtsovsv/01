@@ -8,7 +8,6 @@ const FilterType = {
 };
 
 const SortType = {
-  DEFAULT: "default",
   DATE: "date",
   TIME: "time",
   PRICE: "price",
