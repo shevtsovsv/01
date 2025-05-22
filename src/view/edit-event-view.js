@@ -1,5 +1,10 @@
-import AbstractView from "../framework/view/abstract-view.js";
+// import AbstractView from "../framework/view/abstract-view.js";
+import AbstractStatefulView from "../framework/view/abstract-stateful-view.js";
 import { humanizeEventDueDateEdit } from "../utils/task.js";
+import { getDestination } from "../mock/destination.js";
+import OffersModel from "../model/offers-model.js";
+import flatpickr from "flatpickr";
+import "flatpickr/dist/flatpickr.min.css";
 
 const BLANK_POINT = {
   id: null,
@@ -12,7 +17,63 @@ const BLANK_POINT = {
   type: null,
 };
 
-function editEventTemplate(point) {
+function createDestinationSelectTemplate(currentDestinationName) {
+  const destinations = getDestination();
+
+  return `
+	  <label class="event__label" for="event-destination-select">
+		Destination
+	  </label>
+	  <select class="event__input event__input--destination" id="event-destination-select" name="event-destination">
+		${destinations
+      .map(
+        (dest) => `
+		  <option value="${dest.name}" ${
+          dest.name === currentDestinationName ? "selected" : ""
+        }>${dest.name}</option>
+		`
+      )
+      .join("")}
+	  </select>
+	`;
+}
+
+function createEventTypeListTemplate(currentType) {
+  const eventTypes = [
+    "taxi",
+    "bus",
+    "train",
+    "ship",
+    "drive",
+    "flight",
+    "check-in",
+    "sightseeing",
+    "restaurant",
+  ];
+
+  return `
+	  <fieldset class="event__type-group">
+		<legend class="visually-hidden">Event type</legend>
+		${eventTypes
+      .map(
+        (type) => `
+			  <div class="event__type-item">
+				<input id="event-type-${type}-1" class="event__type-input  visually-hidden"
+				  type="radio" name="event-type" value="${type}" ${
+          currentType === type ? "checked" : ""
+        }>
+				<label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">
+				  ${type.charAt(0).toUpperCase() + type.slice(1)}
+				</label>
+			  </div>
+			`
+      )
+      .join("")}
+	  </fieldset>
+	`;
+}
+
+function createPointEditTemplate(point) {
   const {
     type,
     destination,
@@ -36,67 +97,12 @@ function editEventTemplate(point) {
                     <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
                     <div class="event__type-list">
-                      <fieldset class="event__type-group">
-                        <legend class="visually-hidden">Event type</legend>
-
-                        <div class="event__type-item">
-                          <input id="event-type-taxi-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="taxi">
-                          <label class="event__type-label  event__type-label--taxi" for="event-type-taxi-1">Taxi</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-bus-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="bus">
-                          <label class="event__type-label  event__type-label--bus" for="event-type-bus-1">Bus</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-train-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="train">
-                          <label class="event__type-label  event__type-label--train" for="event-type-train-1">Train</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-ship-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="ship">
-                          <label class="event__type-label  event__type-label--ship" for="event-type-ship-1">Ship</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-drive-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="drive">
-                          <label class="event__type-label  event__type-label--drive" for="event-type-drive-1">Drive</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-flight-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="flight" checked>
-                          <label class="event__type-label  event__type-label--flight" for="event-type-flight-1">Flight</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-check-in-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="check-in">
-                          <label class="event__type-label  event__type-label--check-in" for="event-type-check-in-1">Check-in</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-sightseeing-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="sightseeing">
-                          <label class="event__type-label  event__type-label--sightseeing" for="event-type-sightseeing-1">Sightseeing</label>
-                        </div>
-
-                        <div class="event__type-item">
-                          <input id="event-type-restaurant-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="restaurant">
-                          <label class="event__type-label  event__type-label--restaurant" for="event-type-restaurant-1">Restaurant</label>
-                        </div>
-                      </fieldset>
+                    	 ${createEventTypeListTemplate(type)}
                     </div>
                   </div>
 
                   <div class="event__field-group  event__field-group--destination">
-                    <label class="event__label  event__type-output" for="event-destination-1">
-                      ${type}
-                    </label>
-                    <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
-                    <datalist id="destination-list-1">
-                      <option value="Amsterdam"></option>
-                      <option value="Geneva"></option>
-                      <option value="Chamonix"></option>
-                    </datalist>
+                    ${createDestinationSelectTemplate(destination.name)}
                   </div>
 
                   <div class="event__field-group  event__field-group--time">
@@ -130,7 +136,9 @@ function editEventTemplate(point) {
 
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                    <p class="event__destination-description">${destination.description}</p>
+                    <p class="event__destination-description">${
+                      destination.description
+                    }</p>
                   </section>
                 </section>
               </form>
@@ -138,16 +146,28 @@ function editEventTemplate(point) {
   `;
 }
 
-export default class TaskEditView extends AbstractView {
+export default class EditEventsView extends AbstractStatefulView {
   #point = null;
   #handleFormSubmit = null;
   #handleEditClick = null;
+  #offersModel = new OffersModel();
+  #flatpickrFrom;
+  #flatpickrTo;
+
   constructor({ point = BLANK_POINT, onFormSubmit, onEditClick }) {
     super();
-    this.#point = point;
+    this._setState(EditEventsView.parsePointToState(point));
     this.#handleFormSubmit = onFormSubmit;
     this.#handleEditClick = onEditClick;
+    this._restoreHandlers();
+  }
 
+  get template() {
+    return createPointEditTemplate(this._state);
+  }
+
+  _restoreHandlers() {
+    this.#initFlatpickr();
     this.element
       .querySelector("form")
       .addEventListener("submit", this.#formSubmitHandler);
@@ -156,20 +176,185 @@ export default class TaskEditView extends AbstractView {
       .querySelector(".card__btn--edit")
       //   .addEventListener("click", () => alert("ggg"));
       .addEventListener("click", this.#editClickHandler);
+
+    this.element
+      .querySelector(".event__type-group")
+      .addEventListener("change", this.#eventTypeChangeHandler);
+    this.element
+      .querySelector(".event__input--destination")
+      .addEventListener("change", this.#destinationSelectHandler);
+    this.element
+      .querySelector(".event__input--price")
+      .addEventListener("input", this.#priceInputHandler);
   }
-  get template() {
-    return editEventTemplate(this.#point);
+
+  #initFlatpickr() {
+    // Если уже были flatpickr — уничтожаем, чтобы избежать утечек
+    if (this.#flatpickrFrom) {
+      this.#flatpickrFrom.destroy();
+      this.#flatpickrFrom = null;
+    }
+    if (this.#flatpickrTo) {
+      this.#flatpickrTo.destroy();
+      this.#flatpickrTo = null;
+    }
+
+    // Инициализация flatpickr для даты начала
+    this.#flatpickrFrom = flatpickr(
+      this.element.querySelector("#event-start-time-1"),
+      {
+        enableTime: true,
+        dateFormat: "d/m/Y H:i",
+        defaultDate: this._state.dateFrom,
+        onChange: this.#dateFromChangeHandler,
+      }
+    );
+
+    // Инициализация flatpickr для даты конца
+    this.#flatpickrTo = flatpickr(
+      this.element.querySelector("#event-end-time-1"),
+      {
+        enableTime: true,
+        dateFormat: "d/m/Y H:i",
+        defaultDate: this._state.dateTo,
+        onChange: this.#dateToChangeHandler,
+      }
+    );
   }
+
+  #dateFromChangeHandler = ([selectedDate]) => {
+    // Обновляем состояние даты начала
+    this._setState({ dateFrom: selectedDate });
+
+    // Можно добавить логику для ограничения даты конца, если надо
+    if (
+      this.#flatpickrTo &&
+      this._state.dateTo &&
+      selectedDate > this._state.dateTo
+    ) {
+      this._setState({ dateTo: selectedDate });
+      this.#flatpickrTo.setDate(selectedDate, false);
+    }
+  };
+
+  #dateToChangeHandler = ([selectedDate]) => {
+    // Обновляем состояние даты конца
+    this._setState({ dateTo: selectedDate });
+
+    // Можно добавить логику ограничения даты начала, если надо
+    if (
+      this.#flatpickrFrom &&
+      this._state.dateFrom &&
+      selectedDate < this._state.dateFrom
+    ) {
+      this._setState({ dateFrom: selectedDate });
+      this.#flatpickrFrom.setDate(selectedDate, false);
+    }
+  };
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this.#handleFormSubmit(this.#point);
+    this.#handleFormSubmit(EditEventsView.parseStateToPoint(this._state));
   };
 
   #editClickHandler = (evt) => {
     evt.preventDefault();
     this.#handleEditClick();
+  };
 
-    // alert(111);
+  static parsePointToState(point) {
+    const state = { ...point };
+    return state;
+  }
+
+  static parseStateToPoint(state) {
+    const point = { ...state };
+    return point;
+  }
+
+  #eventTypeChangeHandler = (evt) => {
+    if (evt.target.name === "event-type") {
+      const selectedType = evt.target.value;
+
+      // Получаем все доступные оферы для нового типа
+      const allOffersForType =
+        this.#offersModel.getOffersByType(selectedType) || [];
+
+      // Фильтруем уже выбранные оферы — оставляем только те, которые есть в новом типе
+      const newSelectedOffers = (this._state.offers || []).filter((offer) =>
+        allOffersForType.some((available) => available.id === offer.id)
+      );
+
+      // Генерируем HTML с учётом выбранных
+      const offersEditHtml = this.#createOffersTemplate(
+        allOffersForType,
+        newSelectedOffers
+      );
+
+      this.updateElement({
+        type: selectedType,
+        allOffersForType,
+        offers: newSelectedOffers,
+        offersEditHtml,
+      });
+    }
+  };
+
+  #createOffersTemplate(allOffersForType, selectedOffers = []) {
+    const selectedOfferIds = selectedOffers.map((offer) => offer.id);
+
+    return `
+	  <div class="event__available-offers">
+		${allOffersForType
+      .map((offer) => {
+        const isChecked = selectedOfferIds.includes(offer.id) ? "checked" : "";
+        const sanitizedTitle = offer.title.toLowerCase().replace(/\s+/g, "-");
+        const offerId = `event-offer-${sanitizedTitle}-1`;
+
+        return `
+			  <div class="event__offer-selector">
+				<input class="event__offer-checkbox visually-hidden"
+					   id="${offerId}"
+					   type="checkbox"
+					   name="event-offer-${sanitizedTitle}"
+					   ${isChecked}>
+				<label class="event__offer-label" for="${offerId}">
+				  <span class="event__offer-title">${offer.title}</span>
+				  &plus;&euro;&nbsp;
+				  <span class="event__offer-price">${offer.price}</span>
+				</label>
+			  </div>
+			`;
+      })
+      .join("")}
+	  </div>
+	`;
+  }
+
+  #destinationSelectHandler = (evt) => {
+    const selectedCity = evt.target.value;
+    const destinations = getDestination();
+    const matchedDestination = destinations.find(
+      (d) => d.name === selectedCity
+    );
+
+    if (matchedDestination) {
+      this.updateElement({
+        destination: matchedDestination,
+      });
+    }
+  };
+
+  #priceInputHandler = (evt) => {
+    // Получаем значение из input
+    const value = evt.target.value;
+
+    // Можно добавить проверку и парсинг в число, чтобы не было строк
+    const price = Number(value);
+
+    // Обновляем состояние, если число валидное и не NaN
+    if (!isNaN(price) && price >= 0) {
+      this._setState({ basePrice: price });
+    }
   };
 }
