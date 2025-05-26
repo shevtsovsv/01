@@ -8,7 +8,7 @@ import NoPointView from "../view/no-point-view.js";
 
 import { render, RenderPosition, remove } from "../framework/render";
 import PointPresenter from "./point-presenter.js";
-import { updateItem } from "../utils/common.js";
+
 import { humanizeEventDueDate, formatDuration } from "../utils/task.js";
 
 import {
@@ -25,7 +25,6 @@ export default class BoardPresenter {
   #eventListComponent = new EventListView();
   #boardContainer = null;
   #pointModel = null;
-  #boardPoints = [];
 
   #sortComponent = null;
   #noPointComponent = new NoPointView();
@@ -35,7 +34,6 @@ export default class BoardPresenter {
   #pointPresenters = new Map();
 
   #currentSortType = SortType.DATE;
-  #sourcedBoardPoints = [];
 
   #renderTask;
 
@@ -45,23 +43,39 @@ export default class BoardPresenter {
   }
 
   get points() {
+    switch (sthis.#currentSortType) {
+      case SortType.DATE:
+        return [...this.#pointModel.tasks].sort(sortDateDown);
+        break;
+      case SortType.TIME:
+        return [...this.#pointModel.tasks].sort(sortByTimeDown);
+        break;
+      case SortType.PRICE:
+        return [...this.#pointModel.tasks].sort(sortByPriceDown);
+        break;
+    }
     return this.#pointModel.points;
   }
 
   init() {
-    this.#boardPoints = structuredClone(this.#pointModel.points);
-    this.#sourcedBoardPoints = structuredClone(this.#pointModel.points);
     this.#renderBoard();
   }
 
   #handleLoadMoreButtonClick = () => {
-    this.#renderPoints(
-      this.#renderedPointCount,
+    const pointCount = this.points.length;
+    const newRenderedPointCount = Math.min(
+      pointCount,
       this.#renderedPointCount + POINT_COUNT_PER_STEP
     );
-    this.#renderedPointCount += POINT_COUNT_PER_STEP;
+    const points = this.tasks.slice(
+      this.#renderedPointCount,
+      newRenderedPointCount
+    );
 
-    if (this.#renderedPointCount >= this.#boardPoints.length) {
+    this.#renderPoint(points);
+    this.#renderedPointCount = newRenderedPointCount;
+
+    if (this.#renderedPointCount >= pointCount) {
       remove(this.#loadMoreButtonComponent);
     }
   };
@@ -71,72 +85,8 @@ export default class BoardPresenter {
   };
 
   #handlePointChange = (updatedPoint) => {
-    this.#boardPoints = updateItem(this.#boardPoints, updatedPoint);
     this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
-    this.#sourcedBoardPoints = updateItem(
-      this.#sourcedBoardPoints,
-      updatedPoint
-    );
   };
-
-  #sortTasks(sortType) {
-    // 2. Этот исходный массив задач необходим,
-    // потому что для сортировки мы будем мутировать
-    // массив в свойстве _boardTasks
-    switch (sortType) {
-      case SortType.DATE:
-        this.#boardPoints.sort(sortDateDown);
-        let temp1 = "";
-        this.#boardPoints.forEach((element) => {
-          temp1 +=
-            humanizeEventDueDate(element.dateFrom) +
-            "  " +
-            formatDuration(element.dateFrom, element.dateTo) +
-            " " +
-            element.basePrice +
-            "\n  ";
-        });
-        console.log("data", temp1);
-
-        break;
-      case SortType.TIME:
-        this.#boardPoints.sort(sortByTimeDown);
-
-        let temp2 = "";
-        this.#boardPoints.forEach((element) => {
-          temp2 +=
-            humanizeEventDueDate(element.dateFrom) +
-            "  " +
-            formatDuration(element.dateFrom, element.dateTo) +
-            " " +
-            element.basePrice +
-            "\n  ";
-        });
-        console.log("data", temp2);
-        break;
-      case SortType.PRICE:
-        this.#boardPoints.sort(sortByPriceDown);
-        let temp3 = "";
-        this.#boardPoints.forEach((element) => {
-          temp3 +=
-            humanizeEventDueDate(element.dateFrom) +
-            "  " +
-            formatDuration(element.dateFrom, element.dateTo) +
-            " " +
-            element.basePrice +
-            "\n  ";
-        });
-        console.log("data", temp3);
-
-        break;
-      default:
-        // 3. А когда пользователь захочет "вернуть всё, как было",
-        // мы просто запишем в _boardTasks исходный массив
-        this.#boardPoints = structuredClone(this.#sourcedBoardPoints);
-    }
-
-    this.#currentSortType = sortType;
-  }
 
   //   #handleSortTypeChange = (sortType) => {
   //     // - Сортируем задачи
@@ -156,9 +106,8 @@ export default class BoardPresenter {
       return;
     }
 
-    this.#sortTasks(sortType);
+    this.#currentSortType = sortType;
     this.#clearPointList(); // сбрасываем всё и обнуляем счётчик
-    // this.#renderedPointCount = POINT_COUNT_PER_STEP;
     this.#renderPointList(); // отрисовываем нужное количество точек
   };
 
@@ -183,12 +132,8 @@ export default class BoardPresenter {
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
-  #renderPoints(from, to) {
-    console.log("from to ", from, " ", to);
-
-    this.#boardPoints
-      .slice(from, to)
-      .forEach((point) => this.#renderPoint(point));
+  #renderTasks(point) {
+    points.forEach((point) => this.#renderPoint(point));
   }
 
   #renderLoadMoreButton() {
@@ -224,21 +169,17 @@ export default class BoardPresenter {
   }
 
   #renderPointList() {
+    const pointCount = this.points.length;
+    const points = this.points.slice(
+      0,
+      Math.min(pointCount, POINT_COUNT_PER_STEP)
+    );
+
     render(this.#eventListComponent, this.#boardComponent.element);
 
-    // Отрисовываем от 0 до текущего количества отображаемых точек
-    console.log(
-      "interval ",
-      Math.min(this.#boardPoints.length, this.#renderedPointCount)
-    );
-
-    this.#renderPoints(
-      0,
-      Math.min(this.#boardPoints.length, this.#renderedPointCount)
-    );
-
+    this.#renderTasks(points);
     // Если остались ещё точки — показываем кнопку "Загрузить ещё"
-    if (this.#boardPoints.length > this.#renderedPointCount) {
+    if (pointCount > this.#renderedPointCount) {
       this.#renderLoadMoreButton();
     }
   }
@@ -247,7 +188,7 @@ export default class BoardPresenter {
     render(this.#boardComponent, this.#boardContainer);
     if (
       //   this.#boardPoints.length == 0 ||
-      this.#boardPoints.every((point) => point.isArchive)
+      this.points.every((point) => point.isArchive)
     ) {
       this.#renderNoPoints();
       return;
