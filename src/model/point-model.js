@@ -1,15 +1,16 @@
 import { getRandomPoint, getLengthPoints } from "../mock/points.js";
 import OffersModel from "./offers-model.js";
 import DestinationModel from "./destination-model.js";
-import { EVENT_COUNT } from "../const.js";
+import Observable from "../framework/observable.js";
 
-export default class PointModel {
+export default class PointModel extends Observable {
   //   rezult = {};
   #points = null;
   #offersModel = null;
   #destinationModel = null;
 
   constructor() {
+    super();
     this.#offersModel = new OffersModel();
     this.#destinationModel = new DestinationModel();
     this.#points = Array.from({ length: getLengthPoints() }, () =>

@@ -44,6 +44,10 @@ export default class BoardPresenter {
     this.#pointModel = pointModel;
   }
 
+  get points() {
+    return this.#pointModel.points;
+  }
+
   init() {
     this.#boardPoints = structuredClone(this.#pointModel.points);
     this.#sourcedBoardPoints = structuredClone(this.#pointModel.points);
@@ -219,17 +223,6 @@ export default class BoardPresenter {
     remove(this.#loadMoreButtonComponent);
   }
 
-  //   #renderPointList() {
-  //     render(this.#eventListComponent, this.#boardComponent.element);
-  //     this.#renderPoints(
-  //       0,
-  //       Math.min(this.#boardPoints.length, POINT_COUNT_PER_STEP)
-  //     );
-
-  //     if (this.#boardPoints.length > POINT_COUNT_PER_STEP) {
-  //       this.#renderLoadMoreButton();
-  //     }
-  //   }
   #renderPointList() {
     render(this.#eventListComponent, this.#boardComponent.element);
 
