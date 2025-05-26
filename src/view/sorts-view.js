@@ -46,26 +46,17 @@ export default class SortsView extends AbstractView {
     return createSortsTemplate();
   }
 
-  //   #sortTypeChangeHandler = (evt) => {
-  //     if (evt.target.tagName !== "A") {
-  //       return;
-  //     }
-
-  //     evt.preventDefault();
-  //     this.#handleSortTypeChange(evt.target.dataset.sortType);
-  //   };
   #sortTypeChangeHandler = (evt) => {
     const sortItem = evt.target.closest(".trip-sort__item");
 
     if (!sortItem) {
       return;
     }
-
-    //   evt.preventDefault();
-
     const sortType = sortItem.dataset.sortType;
 
     if (sortType) {
+      console.log(sortType);
+
       this.#handleSortTypeChange(sortType);
     }
   };

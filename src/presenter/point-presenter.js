@@ -37,11 +37,17 @@ export default class PointPresenter {
       point: this.#point,
       onFormSubmit: this.#handleFormSubmit,
       onEditClick: () => {
+        this.#pointEditComponent.reset(this.#point);
         replace(this.#pointComponent, this.#pointEditComponent);
         document.removeEventListener("keydown", this.#escKeyDownHandler);
+
         this.#mode = Mode.DEFAULT;
       },
-      //   onEditClick: this.#replaceCardToForm,
+      onSaveClick: (updatedPoint) => {
+        this.#handleDataChange(updatedPoint); // <-- сохраняем данные
+        this.#point = updatedPoint; // <-- обновляем локальное состояние
+        this.#replaceFormToCard(); // <-- возвращаемся к карточке
+      },
     });
 
     // render(this.#pointComponent, this.#pointListContainer);
@@ -72,6 +78,7 @@ export default class PointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToCard();
     }
   }
@@ -92,6 +99,7 @@ export default class PointPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === "Escape") {
       evt.preventDefault();
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToCard();
     }
   };

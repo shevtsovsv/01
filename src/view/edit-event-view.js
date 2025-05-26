@@ -17,12 +17,16 @@ const BLANK_POINT = {
   type: null,
 };
 
-function createDestinationSelectTemplate(currentDestinationName) {
+function createDestinationSelectTemplate(currentDestinationName, currentType) {
   const destinations = getDestination();
 
   return `
 	  <label class="event__label" for="event-destination-select">
-		Destination
+		 ${
+       currentType
+         ? currentType.charAt(0).toUpperCase() + currentType.slice(1)
+         : ""
+     }
 	  </label>
 	  <select class="event__input event__input--destination" id="event-destination-select" name="event-destination">
 		${destinations
@@ -102,7 +106,7 @@ function createPointEditTemplate(point) {
                   </div>
 
                   <div class="event__field-group  event__field-group--destination">
-                    ${createDestinationSelectTemplate(destination.name)}
+                    ${createDestinationSelectTemplate(destination.name, type)}
                   </div>
 
                   <div class="event__field-group  event__field-group--time">
@@ -121,7 +125,7 @@ function createPointEditTemplate(point) {
                     <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
                   </div>
 
-                  <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
+                  <button class="event__save-btn  btn  btn--blue" type="button">Save</button>
                   <button class="event__reset-btn" type="reset">Delete</button>
                   <button class="event__rollup-btn card__btn--edit" type="button">
                     <span class="visually-hidden">Open event</span>
@@ -150,15 +154,18 @@ export default class EditEventsView extends AbstractStatefulView {
   #point = null;
   #handleFormSubmit = null;
   #handleEditClick = null;
+  #hendleSaveClick;
   #offersModel = new OffersModel();
   #flatpickrFrom;
   #flatpickrTo;
 
-  constructor({ point = BLANK_POINT, onFormSubmit, onEditClick }) {
+  constructor({ point = BLANK_POINT, onFormSubmit, onEditClick, onSaveClick }) {
     super();
     this._setState(EditEventsView.parsePointToState(point));
     this.#handleFormSubmit = onFormSubmit;
     this.#handleEditClick = onEditClick;
+    this.#hendleSaveClick = onSaveClick;
+
     this._restoreHandlers();
   }
 
@@ -166,8 +173,22 @@ export default class EditEventsView extends AbstractStatefulView {
     return createPointEditTemplate(this._state);
   }
 
+  reset(point) {
+    this.updateElement(EditEventsView.parsePointToState(point));
+  }
+  #saveClickHendler = () => {
+    let point = EditEventsView.parseStateToPoint(this._state);
+    // this.updateElement();
+    console.log(point);
+
+    this.#hendleSaveClick(point);
+  };
   _restoreHandlers() {
     this.#initFlatpickr();
+
+    this.element
+      .querySelector(".event__save-btn")
+      .addEventListener("click", this.#saveClickHendler);
     this.element
       .querySelector("form")
       .addEventListener("submit", this.#formSubmitHandler);
@@ -176,6 +197,9 @@ export default class EditEventsView extends AbstractStatefulView {
       .querySelector(".card__btn--edit")
       //   .addEventListener("click", () => alert("ggg"));
       .addEventListener("click", this.#editClickHandler);
+    this.element
+      .querySelector(".event__input--price")
+      .addEventListener("input", this.#priceInputHandler);
 
     this.element
       .querySelector(".event__type-group")
@@ -183,9 +207,6 @@ export default class EditEventsView extends AbstractStatefulView {
     this.element
       .querySelector(".event__input--destination")
       .addEventListener("change", this.#destinationSelectHandler);
-    this.element
-      .querySelector(".event__input--price")
-      .addEventListener("input", this.#priceInputHandler);
   }
 
   #initFlatpickr() {
