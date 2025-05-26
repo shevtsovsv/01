@@ -43,17 +43,19 @@ export default class BoardPresenter {
   }
 
   get points() {
-    switch (sthis.#currentSortType) {
+    switch (this.#currentSortType) {
       case SortType.DATE:
-        return [...this.#pointModel.tasks].sort(sortDateDown);
+        return [...this.#pointModel.points].sort(sortDateDown);
         break;
       case SortType.TIME:
-        return [...this.#pointModel.tasks].sort(sortByTimeDown);
+        return [...this.#pointModel.points].sort(sortByTimeDown);
         break;
       case SortType.PRICE:
-        return [...this.#pointModel.tasks].sort(sortByPriceDown);
+        return [...this.#pointModel.points].sort(sortByPriceDown);
         break;
     }
+    console.log(this.#pointModel.points);
+
     return this.#pointModel.points;
   }
 
@@ -67,7 +69,7 @@ export default class BoardPresenter {
       pointCount,
       this.#renderedPointCount + POINT_COUNT_PER_STEP
     );
-    const points = this.tasks.slice(
+    const points = this.points.slice(
       this.#renderedPointCount,
       newRenderedPointCount
     );
@@ -132,7 +134,7 @@ export default class BoardPresenter {
     this.#pointPresenters.set(point.id, pointPresenter);
   }
 
-  #renderTasks(point) {
+  #renderPoints(points) {
     points.forEach((point) => this.#renderPoint(point));
   }
 
@@ -176,8 +178,9 @@ export default class BoardPresenter {
     );
 
     render(this.#eventListComponent, this.#boardComponent.element);
+    console.log(points);
 
-    this.#renderTasks(points);
+    this.#renderPoints(points);
     // Если остались ещё точки — показываем кнопку "Загрузить ещё"
     if (pointCount > this.#renderedPointCount) {
       this.#renderLoadMoreButton();

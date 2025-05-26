@@ -13,4 +13,16 @@ const SortType = {
   PRICE: "price",
 };
 
-export { EVENT_COUNT, FilterType, SortType };
+const UserAction = {
+  UPDATE_TASK: "UPDATE_TASK",
+  ADD_TASK: "ADD_TASK",
+  DELETE_TASK: "DELETE_TASK",
+};
+
+const UpdateType = {
+  PATCH: "PATCH",
+  MINOR: "MINOR",
+  MAJOR: "MAJOR",
+};
+
+export { EVENT_COUNT, FilterType, SortType, UserAction, UpdateType };
