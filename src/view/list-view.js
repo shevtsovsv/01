@@ -15,6 +15,7 @@ function createListTemplate(point) {
     offersHtml,
     isFavorite,
   } = point;
+  //   console.log(point);
 
   const date = humanizeEventDueDate(dateFrom);
   const timeStart = humanizeEventTime(dateFrom);
@@ -70,6 +71,7 @@ export default class ListView extends AbstractView {
     this.#point = point;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
+    // console.log(this.#point);
 
     this.element
       .querySelector(".card__btn--edit")

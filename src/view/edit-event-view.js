@@ -179,7 +179,7 @@ export default class EditEventsView extends AbstractStatefulView {
   #saveClickHendler = () => {
     let point = EditEventsView.parseStateToPoint(this._state);
     // this.updateElement();
-    console.log(point);
+    // console.log(point);
 
     this.#hendleSaveClick(point);
   };

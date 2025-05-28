@@ -74,7 +74,7 @@ export default class BoardPresenter {
       newRenderedPointCount
     );
 
-    this.#renderPoint(points);
+    this.#renderPoints(points);
     this.#renderedPointCount = newRenderedPointCount;
 
     if (this.#renderedPointCount >= pointCount) {
@@ -125,6 +125,8 @@ export default class BoardPresenter {
   }
 
   #renderPoint(point) {
+    // console.log(point);
+
     const pointPresenter = new PointPresenter({
       pointListContainer: this.#eventListComponent.element,
       onDataChange: this.#handlePointChange,
@@ -135,6 +137,8 @@ export default class BoardPresenter {
   }
 
   #renderPoints(points) {
+    console.log(points);
+
     points.forEach((point) => this.#renderPoint(point));
   }
 
@@ -178,7 +182,7 @@ export default class BoardPresenter {
     );
 
     render(this.#eventListComponent, this.#boardComponent.element);
-    console.log(points);
+    // console.log(points);
 
     this.#renderPoints(points);
     // Если остались ещё точки — показываем кнопку "Загрузить ещё"
