@@ -86,22 +86,21 @@ export default class BoardPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
-  #handlePointChange = (updatedPoint) => {
-    this.#pointPresenters.get(updatedPoint.id).init(updatedPoint);
+  #handleViewAction = (actionType, updateType, update) => {
+    console.log(actionType, updateType, update);
+    // Здесь будем вызывать обновление модели.
+    // actionType - действие пользователя, нужно чтобы понять, какой метод модели вызвать
+    // updateType - тип изменений, нужно чтобы понять, что после нужно обновить
+    // update - обновленные данные
   };
 
-  //   #handleSortTypeChange = (sortType) => {
-  //     // - Сортируем задачи
-  //     if (this.#currentSortType === sortType) {
-  //       return;
-  //     }
-
-  //     this.#sortTasks(sortType);
-  //     // - Очищаем список
-  //     // - Рендерим список заново
-  //     this.#clearPointList();
-  //     this.#renderPointList();
-  //   };
+  #handleModelEvent = (updateType, data) => {
+    console.log(updateType, data);
+    // В зависимости от типа изменений решаем, что делать:
+    // - обновить часть списка (например, когда поменялось описание)
+    // - обновить список (например, когда задача ушла в архив)
+    // - обновить всю доску (например, при переключении фильтра)
+  };
 
   #handleSortTypeChange = (sortType) => {
     if (this.#currentSortType === sortType) {
@@ -129,7 +128,7 @@ export default class BoardPresenter {
 
     const pointPresenter = new PointPresenter({
       pointListContainer: this.#eventListComponent.element,
-      onDataChange: this.#handlePointChange,
+      onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
     });
     pointPresenter.init(point);
@@ -157,14 +156,6 @@ export default class BoardPresenter {
       RenderPosition.AFTERBEGIN
     );
   }
-
-  //   #renderLoadMoreButton() {
-  //     this.#loadMoreButtonComponent = new LoadMoreButtonView({
-  //       onClick: this.#handleLoadMoreButtonClick
-  //     });
-
-  //     render(this.#loadMoreButtonComponent, this.#boardComponent.element);
-  //   }
 
   #clearPointList() {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());

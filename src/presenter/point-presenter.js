@@ -1,7 +1,10 @@
 import ListView from "../view/list-view.js";
 import EditEventsView from "../view/edit-event-view.js";
 
+import { UserAction, UpdateType } from "../const.js";
+
 import { render, replace, remove } from "../framework/render";
+import { UpdateType, UserAction } from "../const.js";
 
 const Mode = {
   DEFAULT: "DEFAULT",
@@ -109,14 +112,14 @@ export default class PointPresenter {
   };
 
   #handleFavoriteClick = () => {
-    this.#handleDataChange({
+    this.#handleDataChange(UserAction.UPDATE_POINT, UpdateType.MINOR, {
       ...this.#point,
       isFavorite: !this.#point.isFavorite,
     });
   };
 
   #handleFormSubmit = (point) => {
-    this.#handleDataChange(point);
+    this.#handleDataChange(UserAction.UPDATE_POINT, UpdateType.MINOR, point);
     this.#replaceFormToCard();
   };
 }
