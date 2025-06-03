@@ -1,8 +1,6 @@
 import ListView from "../view/list-view.js";
 import EditEventsView from "../view/edit-event-view.js";
 
-import { UserAction, UpdateType } from "../const.js";
-
 import { render, replace, remove } from "../framework/render";
 import { UpdateType, UserAction } from "../const.js";
 
