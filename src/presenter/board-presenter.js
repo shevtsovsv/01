@@ -45,13 +45,13 @@ export default class BoardPresenter {
   get points() {
     switch (this.#currentSortType) {
       case SortType.DATE:
-        return [...this.#pointModel.points].sort(sortDateDown);
+        return structuredClone(this.#pointModel.points).sort(sortDateDown);
         break;
       case SortType.TIME:
-        return [...this.#pointModel.points].sort(sortByTimeDown);
+        return structuredClone(this.#pointModel.points).sort(sortByTimeDown);
         break;
       case SortType.PRICE:
-        return [...this.#pointModel.points].sort(sortByPriceDown);
+        return structuredClone(this.#pointModel.points).sort(sortByPriceDown);
         break;
     }
     console.log(this.#pointModel.points);
@@ -208,7 +208,7 @@ export default class BoardPresenter {
 
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
-
+    this.#eventListComponent.element.innerHTML = ""; // если нужно явно очистить DOM
     remove(this.#sortComponent);
     remove(this.#noPointComponent);
     remove(this.#loadMoreButtonComponent);
@@ -237,20 +237,20 @@ export default class BoardPresenter {
     }
 
     this.#renderSort();
-    this.#renderPointList();
+    // this.#renderPointList();
 
-    // render(this.#eventListComponent, this.#boardComponent.element);
+    render(this.#eventListComponent, this.#boardComponent.element);
 
-    // // Теперь, когда #renderBoard рендерит доску не только на старте,
-    // // но и по ходу работы приложения, нужно заменить
-    // // константу TASK_COUNT_PER_STEP на свойство #renderedTaskCount,
-    // // чтобы в случае перерисовки сохранить N-показанных карточек
-    // this.#renderPoints(
-    //   points.slice(0, Math.min(pointCount, this.#renderedPointCount))
-    // );
+    // Теперь, когда #renderBoard рендерит доску не только на старте,
+    // но и по ходу работы приложения, нужно заменить
+    // константу TASK_COUNT_PER_STEP на свойство #renderedTaskCount,
+    // чтобы в случае перерисовки сохранить N-показанных карточек
+    this.#renderPoints(
+      points.slice(0, Math.min(pointCount, this.#renderedPointCount))
+    );
 
-    // if (pointCount > this.#renderedPointCount) {
-    //   this.#renderLoadMoreButton();
-    // }
+    if (pointCount > this.#renderedPointCount) {
+      this.#renderLoadMoreButton();
+    }
   }
 }
