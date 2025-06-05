@@ -230,8 +230,8 @@ export default class EditEventsView extends AbstractStatefulView {
       // Это существующая точка, кнопка "Delete"
       const pointToDelete = EditEventsView.parseStateToPoint(this._state);
       this.#handleDeleteClick(
-        "DELETE_TASK" /*UserAction.DELETE_TASK*/,
-        "MINOR" /*UpdateType.MINOR*/,
+        // "DELETE_TASK" /*UserAction.DELETE_TASK*/,
+        // "MINOR" /*UpdateType.MINOR*/,
         pointToDelete
       );
     }

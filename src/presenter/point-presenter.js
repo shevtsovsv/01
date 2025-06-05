@@ -157,7 +157,9 @@ export default class PointPresenter {
     this.#pointEditComponent.reset(this.#point); // Сбрасываем состояние формы
     this.#replaceFormToCard();
   };
-  #handleDeleteClick = () => {
-    this.destroy();
+  #handleDeleteClick = (point) => {
+    this.#handleDataChange(UserAction.DELETE_POINT, UpdateType.MINOR, point);
+    // this.#replaceFormToCard();
+    // this.destroy();
   };
 }

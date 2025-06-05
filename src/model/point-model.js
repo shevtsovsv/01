@@ -148,6 +148,7 @@ export default class PointModel extends Observable {
       ...this.#points.slice(0, index),
       ...this.#points.slice(index + 1),
     ];
+    // this.#points = this.#points.filter((point) => point.id !== update.id);
 
     this._notify(updateType);
   }
