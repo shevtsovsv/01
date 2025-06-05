@@ -4,17 +4,17 @@ import NewEventsView from "../view/new-event-view.js";
 import BoardView from "../view/board-view.js";
 import EventListView from "../view/event-list-view.js";
 import LoadMoreButtonView from "../view/load-more-button-view.js";
-import NoPointView from "../view/no-point-view.js";
+import NoPointView from "../view/no-point-view.js"; // Убедитесь, что этот компонент может принимать тип фильтра
 
-import { render, RenderPosition, remove } from "../framework/render";
+import { render, RenderPosition, remove, replace } from "../framework/render";
 import PointPresenter from "./point-presenter.js";
-
+import { filter } from "../utils/filter.js"; // <--- 1. ИМПОРТИРУЕМ УТИЛИТУ ФИЛЬТРАЦИИ
 import {
   sortByPriceDown,
   sortDateDown,
   sortByTimeDown,
 } from "../utils/task.js";
-import { SortType, UpdateType, UserAction } from "../const.js";
+import { SortType, UpdateType, UserAction, FilterType } from "../const.js";
 
 const POINT_COUNT_PER_STEP = 5;
 
@@ -23,39 +23,49 @@ export default class BoardPresenter {
   #eventListComponent = new EventListView();
   #boardContainer = null;
   #pointModel = null;
+  #filterModel = null; // <--- 3. ДОБАВЛЯЕМ ЗАВИСИМОСТЬ ОТ FILTERMODEL
 
   #sortComponent = null;
-  #noPointComponent = new NoPointView();
+  #noPointComponent = null; // new NoPointView(); Будет создаваться по необходимости
 
   #loadMoreButtonComponent = null;
   #renderedPointCount = POINT_COUNT_PER_STEP;
   #pointPresenters = new Map();
-
+  #newPointPresenter = null; // Для управления презентером новой точки
   #currentSortType = SortType.DATE;
 
-  #renderTask;
-
-  constructor({ boardContainer, pointModel }) {
+  constructor({ boardContainer, pointModel, filterModel }) {
+    // <--- 4. ПРИНИМАЕМ FILTERMODEL
     this.#boardContainer = boardContainer;
     this.#pointModel = pointModel;
+    this.#filterModel = filterModel; // <--- 5. СОХРАНЯЕМ FILTERMODEL
+
     this.#pointModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent); // <--- 6. ПОДПИСЫВАЕМСЯ НА ИЗМЕНЕНИЯ ФИЛЬТРА
   }
 
   get points() {
+    const currentFilterType = this.#filterModel.filter;
+    const allPointsFromModel = this.#pointModel.points;
+    const filteredPoints = filter[currentFilterType](allPointsFromModel); // <--- 7. СНАЧАЛА ФИЛЬТРУЕМ
+
     switch (this.#currentSortType) {
       case SortType.DATE:
-        return structuredClone(this.#pointModel.points).sort(sortDateDown);
-        break;
+        return filteredPoints.sort(sortDateDown);
       case SortType.TIME:
-        return structuredClone(this.#pointModel.points).sort(sortByTimeDown);
-        break;
+        return filteredPoints.sort(sortByTimeDown);
       case SortType.PRICE:
-        return structuredClone(this.#pointModel.points).sort(sortByPriceDown);
-        break;
+        return filteredPoints.sort(sortByPriceDown);
     }
-    console.log(this.#pointModel.points);
+    return filteredPoints; // По умолчанию, если тип сортировки не совпал (хотя такого быть не должно)
+  }
+  // Геттеры для данных, нужных PointPresenter
+  get offers() {
+    return this.#pointModel.offers; // Предполагаем, что PointModel предоставляет это
+  }
 
-    return this.#pointModel.points;
+  get destinations() {
+    return this.#pointModel.destinations; // Предполагаем, что PointModel предоставляет это
   }
 
   init() {

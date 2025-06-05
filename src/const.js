@@ -1,7 +1,7 @@
 const EVENT_COUNT = 25;
 
 const FilterType = {
-  EVERYTHING: "Everything",
+  EVERYTHING: "everything",
   FUTURE: "future",
   PRESENT: "present",
   PAST: "past",
