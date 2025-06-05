@@ -9,8 +9,6 @@ import NoPointView from "../view/no-point-view.js";
 import { render, RenderPosition, remove } from "../framework/render";
 import PointPresenter from "./point-presenter.js";
 
-import { humanizeEventDueDate, formatDuration } from "../utils/task.js";
-
 import {
   sortByPriceDown,
   sortDateDown,
@@ -40,6 +38,7 @@ export default class BoardPresenter {
   constructor({ boardContainer, pointModel }) {
     this.#boardContainer = boardContainer;
     this.#pointModel = pointModel;
+    this.#pointModel.addObserver(this.#handleModelEvent);
   }
 
   get points() {
@@ -87,14 +86,16 @@ export default class BoardPresenter {
   };
 
   #handleViewAction = (actionType, updateType, update) => {
+    console.log(actionType, updateType, update);
+
     switch (actionType) {
-      case UserAction.UPDATE_TASK:
+      case UserAction.UPDATE_POINT:
         this.#pointModel.updatePoint(updateType, update);
         break;
-      case UserAction.ADD_TASK:
+      case UserAction.ADD_POINT:
         this.#pointModel.addPoint(updateType, update);
         break;
-      case UserAction.DELETE_TASK:
+      case UserAction.DELETE_POINT:
         this.#pointModel.deletePoint(updateType, update);
         break;
     }
@@ -151,6 +152,7 @@ export default class BoardPresenter {
       pointListContainer: this.#eventListComponent.element,
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
+      boardPresenterRef: this, // Передаем ссылку на себя для отмены новой точки
     });
     pointPresenter.init(point);
     this.#pointPresenters.set(point.id, pointPresenter);
