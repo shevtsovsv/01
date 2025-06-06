@@ -92,6 +92,10 @@ export default class BoardPresenter {
   };
 
   #handleModeChange = () => {
+    console.log(
+      "BoardPresenter: Mode change detected. Closing all other forms."
+    );
+    console.log("Current presenters count:", this.#pointPresenters.size);
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 

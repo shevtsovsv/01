@@ -91,12 +91,18 @@ export default class PointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
+      console.log(
+        `PointPresenter for ID [${this.#point.id}] is closing its form.`
+      );
       this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToCard();
     }
   }
 
   #replaceCardToForm() {
+    console.log(
+      `PointPresenter for ID [${this.#point.id}] is opening its form.`
+    );
     replace(this.#pointEditComponent, this.#pointComponent);
     document.addEventListener("keydown", this.#escKeyDownHandler);
     this.#handleModeChange();
@@ -118,6 +124,9 @@ export default class PointPresenter {
   };
 
   #handleEditClick = () => {
+    console.log(
+      `EDIT CLICK HANDLED BY PRESENTER FOR POINT ID: [${this.#point.id}]`
+    );
     this.#replaceCardToForm();
   };
 

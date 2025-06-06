@@ -18,123 +18,63 @@ export default class PointModel extends Observable {
     );
   }
 
-  #createPoint() {
-    const tempPoint = getRandomPoint();
+  #createPoint(rawPoint) {
+    const tempPoint = rawPoint || getRandomPoint();
     const destination =
       tempPoint != undefined
         ? this.#destinationModel.getDestinationById(tempPoint.destination)
-        : "";
+        : null; // Лучше null, чем ""
     const allOffersForType = this.#offersModel.getOffersByType(tempPoint.type);
+
+    // Получаем массив объектов выбранных офферов
     const offers = (allOffersForType ?? []).filter((offer) =>
       tempPoint.offers.includes(offer.id)
     );
 
-    // Генерация HTML для выбранных офферов
-    const offersHtml = this.#createOffersHtml(offers);
-    const offersEditHtml = this.#createOffersTemplate(allOffersForType, offers);
-    const photosTemplate = this.#createPhotosTemplate(destination);
-
+    // Возвращаем чистый объект данных, БЕЗ HTML
     return {
       ...tempPoint,
       destination,
       allOffersForType,
-      offers,
-      offersHtml, // добавляем HTML-шаблон в объект
-      offersEditHtml,
-      photosTemplate,
+      offers, // Это массив объектов, а не ID
     };
   }
 
-  #createOffersHtml(offers) {
-    if (!offers || offers.length === 0) return "";
-
-    return `
-    <ul class="event__selected-offers">
-      ${offers
-        .map(
-          (offer) => `
-          <li class="event__offer">
-            <span class="event__offer-title">${offer.title}</span>
-            &plus;&euro;&nbsp;
-            <span class="event__offer-price">${offer.price}</span>
-          </li>
-        `
-        )
-        .join("")}
-    </ul>
-  `;
-  }
-
-  #createOffersTemplate(allOffersForType, selectedOffers) {
-    const selectedOfferIds = selectedOffers.map((offer) => offer.id); // ← ВАЖНО
-
-    return `
-    <div class="event__available-offers">
-      ${allOffersForType
-        .map((offer) => {
-          const isChecked = selectedOfferIds.includes(offer.id)
-            ? "checked"
-            : "";
-          const sanitizedTitle = offer.title.toLowerCase().replace(/\s+/g, "-");
-          const offerId = `event-offer-${sanitizedTitle}-1`;
-
-          return `
-          <div class="event__offer-selector">
-            <input class="event__offer-checkbox visually-hidden"
-                   id="${offerId}"
-                   type="checkbox"
-                   name="event-offer-${sanitizedTitle}"
-                   ${isChecked}>
-            <label class="event__offer-label" for="${offerId}">
-              <span class="event__offer-title">${offer.title}</span>
-              &plus;&euro;&nbsp;
-              <span class="event__offer-price">${offer.price}</span>
-            </label>
-          </div>
-        `;
-        })
-        .join("")}
-    </div>
-  `;
-  }
-
-  #createPhotosTemplate(destination) {
-    const photosHtml = destination.pictures
-      .map((picture) => {
-        return `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`;
-      })
-      .join("\n");
-
-    return `
-<div class="event__photos-container">
-  <div class="event__photos-tape">
-    ${photosHtml}
-  </div>
-</div>`.trim();
-  }
   // ----------------------7.3-------------------------------
   updatePoint(updateType, update) {
-    console.log(updateType, update, "---");
-
     const index = this.#points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
       throw new Error("Can't update unexisting point");
     }
 
+    // 'update' от "Favorite" уже "обогащен" (destination - это объект).
+    // 'update' от формы - "сырой" (destination - это ID/строка).
+    // Мы должны обрабатывать оба случая.
+
+    let finalUpdate = update; // По умолчанию считаем, что данные уже готовы
+
+    // Если destination - это строка, значит, данные "сырые" и их нужно обогатить.
+    // (Добавляем проверку на null на случай, если точка новая и без пункта назначения)
+    if (typeof update.destination === "string" || update.destination === null) {
+      finalUpdate = this.#createPoint(update);
+    }
+    // Если же destination - это объект, мы просто используем `update` как есть (finalUpdate).
+
     this.#points = [
       ...this.#points.slice(0, index),
-      update,
+      finalUpdate,
       ...this.#points.slice(index + 1),
     ];
 
-    this._notify(updateType, update);
+    this._notify(updateType, finalUpdate);
   }
 
   addPoint(updateType, update) {
     this.#points = [update, ...this.#points];
-
-    this._notify(updateType, update);
+    const enrichedUpdate = this.#createPoint(update);
+    this.#points = [enrichedUpdate, ...this.#points];
+    this._notify(updateType, enrichedUpdate);
   }
 
   deletePoint(updateType, update) {

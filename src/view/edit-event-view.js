@@ -78,19 +78,36 @@ function createEventTypeListTemplate(currentType) {
 	`;
 }
 
+// 👇 Создаем функцию-шаблонизатор для фотоленты
+function createPhotosTemplate(pictures) {
+  if (!pictures || pictures.length === 0) {
+    return "";
+  }
+
+  const photosHtml = pictures
+    .map(
+      (picture) =>
+        `<img class="event__photo" src="${picture.src}" alt="${picture.description}">`
+    )
+    .join("\n");
+
+  return `
+	  <div class="event__photos-container">
+		<div class="event__photos-tape">
+		  ${photosHtml}
+		</div>
+	  </div>`;
+}
+
 function createPointEditTemplate(point) {
-  const {
-    type,
-    destination,
-    dateFrom,
-    dateTo,
-    basePrice,
-    offersHtml,
-    offersEditHtml,
-    favorite,
-  } = point;
+  const { type, destination, dateFrom, dateTo, basePrice } = point;
   const dFrom = humanizeEventDueDateEdit(dateFrom);
   const dTo = humanizeEventDueDateEdit(dateTo);
+  const photosTemplate = destination
+    ? createPhotosTemplate(destination.pictures)
+    : "";
+  const destinationDescription = destination ? destination.description : "";
+
   return `<li class="trip-events__item">
               <form class="event event--edit" action="#" method="post">
                 <header class="event__header">
@@ -136,14 +153,14 @@ function createPointEditTemplate(point) {
                   <section class="event__section  event__section--offers">
                     <h3 class="event__section-title  event__section-title--offers">Offers</h3>
 
-                    ${offersEditHtml}
+                    ${point.offersEditHtml}
                   </section>
 
                   <section class="event__section  event__section--destination">
                     <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-                    <p class="event__destination-description">${
-                      destination.description
-                    }</p>
+                    <p class="event__destination-description">${destinationDescription}</p>
+					 <!-- ✅ Вставляем сгенерированный HTML фотоленты -->
+                    ${photosTemplate}
                   </section>
                 </section>
               </form>
@@ -167,7 +184,7 @@ export default class EditEventsView extends AbstractStatefulView {
     onDeleteClick,
   }) {
     super();
-    this._setState(EditEventsView.parsePointToState(point, this.#offersModel));
+    this._setState(EditEventsView.parsePointToState(point));
     this.#handleDataChange = onDataChange;
     this.#handleCancelClick = onCancelClick;
     this.#handleDeleteClick = onDeleteClick;
@@ -176,12 +193,17 @@ export default class EditEventsView extends AbstractStatefulView {
   }
 
   get template() {
+    // Получаем все доступные офферы для текущего типа из состояния
     const allOffersForType =
       this.#offersModel.getOffersByType(this._state.type) || [];
+
+    // Генерируем HTML для офферов, используя внутренний метод
     const offersEditHtml = this.#createOffersTemplate(
       allOffersForType,
-      this._state.offers
+      this._state.offers // this._state.offers - это массив ОБЪЕКТОВ выбранных офферов
     );
+
+    // Передаем в главный шаблонизатор состояние и сгенерированный HTML для офферов
     return createPointEditTemplate({ ...this._state, offersEditHtml });
   }
 
@@ -385,53 +407,26 @@ export default class EditEventsView extends AbstractStatefulView {
   };
 
   static parsePointToState(point, offersModel) {
-    // Добавил offersModel для корректной работы с offers
-    const allOffersForType = offersModel.getOffersByType(point.type) || [];
-    // Убедимся, что в point.offers только валидные офферы для данного типа
-    const validOffers = Array.isArray(point.offers)
-      ? point.offers
-          .filter((offerIdOrObject) => {
-            // Если point.offers содержит ID, нужно преобразовать их в объекты
-            // Если point.offers уже содержит объекты, то проверить их наличие в allOffersForType
-            if (
-              typeof offerIdOrObject === "object" &&
-              offerIdOrObject !== null &&
-              offerIdOrObject.id
-            ) {
-              return allOffersForType.some(
-                (availableOffer) => availableOffer.id === offerIdOrObject.id
-              );
-            }
-            // Если это просто массив ID (старый формат), то ищем их
-            return allOffersForType.some(
-              (availableOffer) => availableOffer.id === offerIdOrObject
-            );
-          })
-          .map((offerIdOrObject) => {
-            if (
-              typeof offerIdOrObject === "object" &&
-              offerIdOrObject !== null &&
-              offerIdOrObject.id
-            ) {
-              return offerIdOrObject;
-            }
-            return allOffersForType.find(
-              (availableOffer) => availableOffer.id === offerIdOrObject
-            );
-          })
-      : [];
-
     return {
       ...point,
-      // offers: point.offers || [], // Убедитесь, что offers в state это массив ОБЪЕКТОВ офферов, а не ID
-      offers: validOffers, // Теперь это массив объектов
-      // offersEditHtml и offersHtml больше не нужны в state, они генерируются в get template()
-      // allOffersForType также не нужен в state, он получается из модели по типу
     };
   }
 
   static parseStateToPoint(state) {
     const point = { ...state };
+    // allOffersForType - это вспомогательное свойство, которое было в объекте.
+    // Оно не является частью "чистых" данных точки и не должно
+    // отправляться на сохранение в модель. Удаляем его.
+    delete point.allOffersForType;
+
+    // В `state.offers` у нас лежат полные объекты офферов.
+    // А модель, по-хорошему, должна хранить только массив их ID.
+    // Давайте преобразуем их обратно в ID.
+    point.offers = point.offers.map((offer) => offer.id);
+
+    // В `state.destination` у нас полный объект.
+    // А модель должна хранить только ID.
+    point.destination = point.destination.id;
     return point;
   }
 

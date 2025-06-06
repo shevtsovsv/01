@@ -5,16 +5,31 @@ import {
   formatDuration,
 } from "../utils/task.js";
 
+// 👇 Создаем функцию-шаблонизатор прямо здесь
+function createSelectedOffersTemplate(offers) {
+  if (!offers || offers.length === 0) {
+    return "";
+  }
+  return `
+	  <ul class="event__selected-offers">
+		${offers
+      .map(
+        (offer) => `
+			<li class="event__offer">
+			  <span class="event__offer-title">${offer.title}</span>
+			  +€ 
+			  <span class="event__offer-price">${offer.price}</span>
+			</li>
+		  `
+      )
+      .join("")}
+	  </ul>
+	`;
+}
+
 function createListTemplate(point) {
-  const {
-    type,
-    destination,
-    dateFrom,
-    dateTo,
-    basePrice,
-    offersHtml,
-    isFavorite,
-  } = point;
+  const { type, destination, dateFrom, dateTo, basePrice, offers, isFavorite } =
+    point;
   //   console.log(point);
 
   const date = humanizeEventDueDate(dateFrom);
@@ -23,6 +38,9 @@ function createListTemplate(point) {
   const favoriteClassName = isFavorite
     ? "event__favorite-btn event__favorite-btn--active"
     : "event__favorite-btn";
+
+  // 👇 Используем новую функцию-шаблонизатор
+  const offersTemplate = createSelectedOffersTemplate(offers);
   return `
   		<li class="trip-events__item">
               <div class="event">
@@ -46,7 +64,7 @@ function createListTemplate(point) {
                   &euro;&nbsp;<span class="event__price-value">${basePrice}</span>
                 </p>
                 <h4 class="visually-hidden">Offers:</h4>
-                ${offersHtml}
+                ${offersTemplate} <!-- ✅ Вставляем сгенерированный HTML -->
                 <button class="${favoriteClassName}" type="button">
                   <span class="visually-hidden">Add to favorite</span>
                   <svg class="event__favorite-icon" width="28" height="28" viewBox="0 0 28 28">
@@ -71,7 +89,9 @@ export default class ListView extends AbstractView {
     this.#point = point;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
-    // console.log(this.#point);
+    console.log(
+      `ListView CREATED FOR POINT ID: [${this.#point.id}]. Attaching handler.`
+    );
 
     this.element
       .querySelector(".card__btn--edit")
