@@ -20,12 +20,32 @@ export default class PointModel extends Observable {
     this.#tasksApiService = tasksApiService;
     console.log(this.#tasksApiService);
     this.#tasksApiService.points.then((points) => {
-      console.log(points);
-      // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
-      // а ещё на сервере используется snake_case, а у нас camelCase.
-      // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
-      // Есть вариант получше - паттерн "Адаптер"
+      console.log(points.map(this.#adaptToClient));
     });
+  }
+
+  #adaptToClient(point) {
+    const adaptedPoint = {
+      ...point,
+      basePrice: point["base_price"],
+      dateFrom:
+        point["date_from"] !== null
+          ? new Date(point["date_from"])
+          : point["date_from"], // На клиенте дата хранится как экземпляр Date
+      dateTo:
+        point["date_to"] !== null
+          ? new Date(point["date_to"])
+          : point["date_to"], // На клиенте дата хранится как экземпляр Date
+      isFavorite: point["is_favorite"],
+    };
+
+    // Ненужные ключи мы удаляем
+    delete adaptedPoint["base_price"];
+    delete adaptedPoint["date_from"];
+    delete adaptedPoint["date_to"];
+    delete adaptedPoint["is_favorite"];
+
+    return adaptedPoint;
   }
 
   #createPoint(rawPoint) {
