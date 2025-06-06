@@ -8,14 +8,24 @@ export default class PointModel extends Observable {
   #points = null;
   #offersModel = null;
   #destinationModel = null;
+  #tasksApiService = null;
 
-  constructor() {
+  constructor({ tasksApiService }) {
     super();
     this.#offersModel = new OffersModel();
     this.#destinationModel = new DestinationModel();
-    this.#points = Array.from({ length: getLengthPoints() }, () =>
-      this.#createPoint()
-    );
+    // this.#points = Array.from({ length: getLengthPoints() }, () =>
+    //   this.#createPoint()
+    // );
+    this.#tasksApiService = tasksApiService;
+    console.log(this.#tasksApiService);
+    this.#tasksApiService.points.then((points) => {
+      console.log(points);
+      // Есть проблема: cтруктура объекта похожа, но некоторые ключи называются иначе,
+      // а ещё на сервере используется snake_case, а у нас camelCase.
+      // Можно, конечно, переписать часть нашего клиентского приложения, но зачем?
+      // Есть вариант получше - паттерн "Адаптер"
+    });
   }
 
   #createPoint(rawPoint) {
