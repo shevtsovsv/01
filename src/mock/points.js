@@ -6,8 +6,8 @@ const mockPoints = [
   {
     id: "81a1e334-c2f2-4873-baba-b1aac209a858",
     basePrice: 1766,
-    dateFrom: "2025-01-21T14:00:22.952Z",
-    dateTo: "2027-01-23T14:00:22.952Z",
+    dateFrom: "2025-06-06T14:00:22.952Z",
+    dateTo: "2025-06-07T14:00:22.952Z",
     destination: "f77f73b4-f875-4af7-921d-d85f1032954b",
     isFavorite: true,
     offers: [],
@@ -16,8 +16,8 @@ const mockPoints = [
   {
     id: "58b3da23-5e82-4cb5-86b7-56bc0c845dd5",
     basePrice: 6847,
-    dateFrom: "2025-01-23T14:00:22.952Z",
-    dateTo: "2027-01-24T02:00:22.952Z",
+    dateFrom: "2025-06-06T14:00:22.952Z",
+    dateTo: "2025-06-07T02:00:22.952Z",
     destination: "f77f73b4-f875-4af7-921d-d85f1032954b",
     isFavorite: true,
     offers: [],

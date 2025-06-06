@@ -112,6 +112,8 @@ export default class BoardPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
+    console.log("----", updateType, data, this.points);
+
     switch (updateType) {
       case UpdateType.PATCH:
         // - обновить часть списка (например, когда поменялось описание)

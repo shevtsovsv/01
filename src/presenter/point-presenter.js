@@ -132,7 +132,7 @@ export default class PointPresenter {
     console.log(point);
 
     this.#handleDataChange(UserAction.UPDATE_POINT, UpdateType.MINOR, point);
-    this.#replaceFormToCard();
+    // this.#replaceFormToCard();
   };
 
   #handleCancelEditClick = () => {

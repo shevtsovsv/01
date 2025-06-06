@@ -229,11 +229,7 @@ export default class EditEventsView extends AbstractStatefulView {
     } else {
       // Это существующая точка, кнопка "Delete"
       const pointToDelete = EditEventsView.parseStateToPoint(this._state);
-      this.#handleDeleteClick(
-        // "DELETE_TASK" /*UserAction.DELETE_TASK*/,
-        // "MINOR" /*UpdateType.MINOR*/,
-        pointToDelete
-      );
+      this.#handleDeleteClick(pointToDelete);
     }
   };
   // Обработчик для кнопки "Rollup" (свернуть/отменить редактирование существующей)
