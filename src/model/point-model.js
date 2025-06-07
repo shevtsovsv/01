@@ -1,5 +1,3 @@
-import OffersModel from "./offers-model.js";
-import DestinationModel from "./destination-model.js";
 import Observable from "../framework/observable.js";
 import { UpdateType } from "../const.js";
 
@@ -9,10 +7,10 @@ export default class PointModel extends Observable {
   #destinationModel = null;
   #tasksApiService = null;
 
-  constructor({ tasksApiService }) {
+  constructor({ tasksApiService, destinationModel, offersModel }) {
     super();
-    this.#offersModel = new OffersModel();
-    this.#destinationModel = new DestinationModel();
+    this.#destinationModel = destinationModel;
+    this.#offersModel = offersModel; // <--- ПРИСВАИВАЕМ переданную модель
     this.#tasksApiService = tasksApiService;
   }
 
@@ -21,7 +19,6 @@ export default class PointModel extends Observable {
       const points = await this.#tasksApiService.points;
       this.#points = points.map(this.#adaptToClient);
       this.#points = this.#points.map(this.#createPoint);
-      console.log(this.#points);
     } catch (err) {
       this.#points = [];
     }
@@ -53,33 +50,25 @@ export default class PointModel extends Observable {
   }
 
   #createPoint = (rawPoint) => {
-    const tempPoint = rawPoint;
-    console.log(
-      this.#destinationModel.getDestinationById(tempPoint.destination)
-    );
-
     const destination =
-      tempPoint != undefined
-        ? this.#destinationModel.getDestinationById(tempPoint.destination)
+      rawPoint != undefined
+        ? this.#destinationModel.getDestinationById(rawPoint.destination)
         : null; // Лучше null, чем ""
-    const allOffersForType = this.#offersModel.getOffersByType(tempPoint.type);
-    console.log(
-      tempPoint.type,
-      this.#offersModel.getOffersByType(tempPoint.type)
-    );
+    const allOffersForType = this.#offersModel.getOffersByType(rawPoint.type);
 
     // Получаем массив объектов выбранных офферов
     const offers = (allOffersForType ?? []).filter((offer) =>
-      tempPoint.offers.includes(offer.id)
+      rawPoint.offers.includes(offer.id)
     );
-
-    // Возвращаем чистый объект данных, БЕЗ HTML
-    return {
-      ...tempPoint,
+    const rez = {
+      ...rawPoint,
       destination,
       allOffersForType,
       offers, // Это массив объектов, а не ID
     };
+
+    // Возвращаем чистый объект данных, БЕЗ HTML
+    return rez;
   };
 
   // ----------------------7.3-------------------------------

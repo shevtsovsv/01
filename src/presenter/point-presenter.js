@@ -20,13 +20,19 @@ export default class PointPresenter {
   #handleModeChange = null;
   #mode = Mode.DEFAULT;
   #boardPresenterRef = null; // Если PointPresenter создается из BoardPresenter
+  #offersModel = null;
+  #destinationModel = null; // <--- Добавляем поле
 
   constructor({
     pointListContainer,
     onDataChange,
     onModeChange,
     boardPresenterRef,
+    offersModel,
+    destinationModel,
   }) {
+    this.#offersModel = offersModel;
+    this.#destinationModel = destinationModel;
     this.#pointListContainer = pointListContainer;
     this.#handleDataChange = onDataChange;
     this.#handleModeChange = onModeChange;
@@ -45,6 +51,8 @@ export default class PointPresenter {
     });
     this.#pointEditComponent = new EditEventsView({
       point: this.#point,
+      offersModel: this.#offersModel,
+      destinationModel: this.#destinationModel,
       //   onFormSubmit: this.#handleFormSubmit,
       //   onEditClick: () => {
       //     this.#pointEditComponent.reset(this.#point);
@@ -91,18 +99,12 @@ export default class PointPresenter {
 
   resetView() {
     if (this.#mode !== Mode.DEFAULT) {
-      console.log(
-        `PointPresenter for ID [${this.#point.id}] is closing its form.`
-      );
       this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToCard();
     }
   }
 
   #replaceCardToForm() {
-    console.log(
-      `PointPresenter for ID [${this.#point.id}] is opening its form.`
-    );
     replace(this.#pointEditComponent, this.#pointComponent);
     document.addEventListener("keydown", this.#escKeyDownHandler);
     this.#handleModeChange();
@@ -124,9 +126,6 @@ export default class PointPresenter {
   };
 
   #handleEditClick = () => {
-    console.log(
-      `EDIT CLICK HANDLED BY PRESENTER FOR POINT ID: [${this.#point.id}]`
-    );
     this.#replaceCardToForm();
   };
 
@@ -138,8 +137,6 @@ export default class PointPresenter {
   };
 
   #handleFormUpdateSubmit = (point) => {
-    console.log(point);
-
     this.#handleDataChange(UserAction.UPDATE_POINT, UpdateType.MINOR, point);
     // this.#replaceFormToCard();
   };

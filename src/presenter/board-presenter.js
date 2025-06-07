@@ -1,5 +1,4 @@
 import SortsView from "../view/sorts-view";
-import NewEventsView from "../view/new-event-view.js";
 import LoadingView from "../view/loading-view.js";
 
 import BoardView from "../view/board-view.js";
@@ -7,7 +6,7 @@ import EventListView from "../view/event-list-view.js";
 import LoadMoreButtonView from "../view/load-more-button-view.js";
 import NoPointView from "../view/no-point-view.js"; // Убедитесь, что этот компонент может принимать тип фильтра
 
-import { render, RenderPosition, remove, replace } from "../framework/render";
+import { render, RenderPosition, remove } from "../framework/render";
 import PointPresenter from "./point-presenter.js";
 import { filter } from "../utils/filter.js"; // <--- 1. ИМПОРТИРУЕМ УТИЛИТУ ФИЛЬТРАЦИИ
 import {
@@ -15,7 +14,7 @@ import {
   sortDateDown,
   sortByTimeDown,
 } from "../utils/task.js";
-import { SortType, UpdateType, UserAction, FilterType } from "../const.js";
+import { SortType, UpdateType, UserAction } from "../const.js";
 
 const POINT_COUNT_PER_STEP = 5;
 
@@ -24,6 +23,8 @@ export default class BoardPresenter {
   #eventListComponent = new EventListView();
   #loadingComponent = new LoadingView();
   #boardContainer = null;
+  #offersModel = null;
+  #destinationModel = null;
   #pointModel = null;
   #filterModel = null; // <--- 3. ДОБАВЛЯЕМ ЗАВИСИМОСТЬ ОТ FILTERMODEL
 
@@ -37,12 +38,19 @@ export default class BoardPresenter {
   #currentSortType = SortType.DATE;
   #isLoading = true;
 
-  constructor({ boardContainer, pointModel, filterModel }) {
+  constructor({
+    boardContainer,
+    pointModel,
+    filterModel,
+    offersModel,
+    destinationModel,
+  }) {
     // <--- 4. ПРИНИМАЕМ FILTERMODEL
     this.#boardContainer = boardContainer;
     this.#pointModel = pointModel;
     this.#filterModel = filterModel; // <--- 5. СОХРАНЯЕМ FILTERMODEL
-
+    this.#offersModel = offersModel; // <--- Сохраняем
+    this.#destinationModel = destinationModel;
     this.#pointModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent); // <--- 6. ПОДПИСЫВАЕМСЯ НА ИЗМЕНЕНИЯ ФИЛЬТРА
   }
@@ -166,6 +174,8 @@ export default class BoardPresenter {
       pointListContainer: this.#eventListComponent.element,
       onDataChange: this.#handleViewAction,
       onModeChange: this.#handleModeChange,
+      offersModel: this.#offersModel,
+      destinationModel: this.#destinationModel,
       boardPresenterRef: this, // Передаем ссылку на себя для отмены новой точки
     });
     pointPresenter.init(point);

@@ -1,8 +1,5 @@
-// import AbstractView from "../framework/view/abstract-view.js";
 import AbstractStatefulView from "../framework/view/abstract-stateful-view.js";
 import { humanizeEventDueDateEdit } from "../utils/task.js";
-import { getDestination } from "../mock/destination.js";
-import OffersModel from "../model/offers-model.js";
 import { SortType, UpdateType, UserAction } from "../const.js";
 import flatpickr from "flatpickr";
 import "flatpickr/dist/flatpickr.min.css";
@@ -18,9 +15,11 @@ const BLANK_POINT = {
   type: null,
 };
 
-function createDestinationSelectTemplate(currentDestinationName, currentType) {
-  const destinations = getDestination();
-
+function createDestinationSelectTemplate(
+  currentDestinationName,
+  currentType,
+  allDestinations
+) {
   return `
 	  <label class="event__label" for="event-destination-select">
 		 ${
@@ -30,7 +29,7 @@ function createDestinationSelectTemplate(currentDestinationName, currentType) {
      }
 	  </label>
 	  <select class="event__input event__input--destination" id="event-destination-select" name="event-destination">
-		${destinations
+		${allDestinations
       .map(
         (dest) => `
 		  <option value="${dest.name}" ${
@@ -100,7 +99,14 @@ function createPhotosTemplate(pictures) {
 }
 
 function createPointEditTemplate(point) {
-  const { type, destination, dateFrom, dateTo, basePrice } = point;
+  const {
+    type,
+    destination,
+    dateFrom,
+    dateTo,
+    basePrice,
+    destinationSelectHtml,
+  } = point;
   const dFrom = humanizeEventDueDateEdit(dateFrom);
   const dTo = humanizeEventDueDateEdit(dateTo);
   const photosTemplate = destination
@@ -124,7 +130,7 @@ function createPointEditTemplate(point) {
                   </div>
 
                   <div class="event__field-group  event__field-group--destination">
-                    ${createDestinationSelectTemplate(destination.name, type)}
+                     ${destinationSelectHtml} 
                   </div>
 
                   <div class="event__field-group  event__field-group--time">
@@ -173,12 +179,15 @@ export default class EditEventsView extends AbstractStatefulView {
   #handleCancelClick = null; // Для кнопки "Rollup" или "Cancel" для новой точки
   #handleDeleteClick = null; // Для кнопки "Delete"
 
-  #offersModel = new OffersModel();
+  #offersModel = null;
+  #destinationModel = null;
   #flatpickrFrom;
   #flatpickrTo;
 
   constructor({
     point = BLANK_POINT,
+    offersModel,
+    destinationModel,
     onDataChange,
     onCancelClick,
     onDeleteClick,
@@ -188,6 +197,8 @@ export default class EditEventsView extends AbstractStatefulView {
     this.#handleDataChange = onDataChange;
     this.#handleCancelClick = onCancelClick;
     this.#handleDeleteClick = onDeleteClick;
+    this.#offersModel = offersModel;
+    this.#destinationModel = destinationModel;
 
     this._restoreHandlers();
   }
@@ -202,9 +213,23 @@ export default class EditEventsView extends AbstractStatefulView {
       allOffersForType,
       this._state.offers // this._state.offers - это массив ОБЪЕКТОВ выбранных офферов
     );
+    const destinationName = this._state.destination
+      ? this._state.destination.name
+      : "";
+    const allDestinations = this.#destinationModel.destinations;
+
+    const destinationSelectHtml = createDestinationSelectTemplate(
+      destinationName,
+      this._state.type,
+      allDestinations // <--- Передаем реальные данные
+    );
 
     // Передаем в главный шаблонизатор состояние и сгенерированный HTML для офферов
-    return createPointEditTemplate({ ...this._state, offersEditHtml });
+    return createPointEditTemplate({
+      ...this._state,
+      offersEditHtml,
+      destinationSelectHtml,
+    });
   }
 
   reset(point) {
@@ -212,13 +237,6 @@ export default class EditEventsView extends AbstractStatefulView {
       EditEventsView.parsePointToState(point, this.#offersModel)
     );
   }
-  //   #saveClickHendler = () => {
-  //     let point = EditEventsView.parseStateToPoint(this._state);
-  //     // this.updateElement();
-  //     // console.log(point);
-
-  //     this.#hendleSaveClick(point);
-  //   };
 
   // Обработчик для кнопки "Save" или submit формы
   #saveButtonClickHandler = (evt) => {
@@ -426,7 +444,9 @@ export default class EditEventsView extends AbstractStatefulView {
 
     // В `state.destination` у нас полный объект.
     // А модель должна хранить только ID.
-    point.destination = point.destination.id;
+    if (point.destination) {
+      point.destination = point.destination.id;
+    }
     return point;
   }
 
@@ -492,7 +512,8 @@ export default class EditEventsView extends AbstractStatefulView {
   #destinationSelectHandler = (evt) => {
     // ... (остается как есть, но обновляет _state)
     const selectedCity = evt.target.value;
-    const destinations = getDestination(); // getDestination() должна возвращать актуальный список
+
+    const destinations = this.#destinationModel.destinations; // getDestination() должна возвращать актуальный список
     const matchedDestination = destinations.find(
       (d) => d.name === selectedCity
     );

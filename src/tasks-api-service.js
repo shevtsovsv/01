@@ -10,7 +10,7 @@ export default class TasksApiService extends ApiService {
     return this._load({ url: "points" }).then(ApiService.parseResponse);
   }
 
-  async updatePointk(point) {
+  async updatePoint(point) {
     const response = await this._load({
       url: `tasks/${point.id}`,
       method: Method.PUT,
