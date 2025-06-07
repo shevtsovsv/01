@@ -1,5 +1,6 @@
 import SortsView from "../view/sorts-view";
 import NewEventsView from "../view/new-event-view.js";
+import LoadingView from "../view/loading-view.js";
 
 import BoardView from "../view/board-view.js";
 import EventListView from "../view/event-list-view.js";
@@ -21,6 +22,7 @@ const POINT_COUNT_PER_STEP = 5;
 export default class BoardPresenter {
   #boardComponent = new BoardView();
   #eventListComponent = new EventListView();
+  #loadingComponent = new LoadingView();
   #boardContainer = null;
   #pointModel = null;
   #filterModel = null; // <--- 3. ДОБАВЛЯЕМ ЗАВИСИМОСТЬ ОТ FILTERMODEL
@@ -33,6 +35,7 @@ export default class BoardPresenter {
   #pointPresenters = new Map();
   #newPointPresenter = null; // Для управления презентером новой точки
   #currentSortType = SortType.DATE;
+  #isLoading = true;
 
   constructor({ boardContainer, pointModel, filterModel }) {
     // <--- 4. ПРИНИМАЕМ FILTERMODEL
@@ -128,6 +131,11 @@ export default class BoardPresenter {
         });
         this.#renderBoard();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderBoard();
+        break;
     }
   };
 
@@ -217,6 +225,7 @@ export default class BoardPresenter {
     this.#eventListComponent.element.innerHTML = ""; // если нужно явно очистить DOM
     remove(this.#sortComponent);
     remove(this.#noPointComponent);
+    remove(this.#loadingComponent);
     remove(this.#loadMoreButtonComponent);
 
     if (resetRenderedPointCount) {
@@ -233,8 +242,20 @@ export default class BoardPresenter {
     }
   }
 
+  #renderLoading() {
+    render(
+      this.#loadingComponent,
+      this.#boardComponent.element,
+      RenderPosition.AFTERBEGIN
+    );
+  }
+
   #renderBoard() {
     render(this.#boardComponent, this.#boardContainer);
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
     const points = this.points;
     const pointCount = points.length;
     if (pointCount === 0) {
