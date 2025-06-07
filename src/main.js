@@ -41,3 +41,6 @@ const filterPresenter = new FilterPresenter({
 filterPresenter.init();
 boardPresenter.init();
 pointModel.init();
+tasksModel.init().finally(() => {
+  render(newTaskButtonComponent, siteHeaderElement);
+});
