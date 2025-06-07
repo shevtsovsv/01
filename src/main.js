@@ -40,3 +40,4 @@ const filterPresenter = new FilterPresenter({
 
 filterPresenter.init();
 boardPresenter.init();
+pointModel.init();

@@ -92,16 +92,10 @@ export default class BoardPresenter {
   };
 
   #handleModeChange = () => {
-    console.log(
-      "BoardPresenter: Mode change detected. Closing all other forms."
-    );
-    console.log("Current presenters count:", this.#pointPresenters.size);
     this.#pointPresenters.forEach((presenter) => presenter.resetView());
   };
 
   #handleViewAction = (actionType, updateType, update) => {
-    console.log(actionType, updateType, update);
-
     switch (actionType) {
       case UserAction.UPDATE_POINT:
         this.#pointModel.updatePoint(updateType, update);
@@ -116,8 +110,6 @@ export default class BoardPresenter {
   };
 
   #handleModelEvent = (updateType, data) => {
-    console.log("----", updateType, data, this.points);
-
     switch (updateType) {
       case UpdateType.PATCH:
         // - обновить часть списка (например, когда поменялось описание)
@@ -162,8 +154,6 @@ export default class BoardPresenter {
   }
 
   #renderPoint(point) {
-    // console.log(point);
-
     const pointPresenter = new PointPresenter({
       pointListContainer: this.#eventListComponent.element,
       onDataChange: this.#handleViewAction,
@@ -175,8 +165,6 @@ export default class BoardPresenter {
   }
 
   #renderPoints(points) {
-    console.log(points);
-
     points.forEach((point) => this.#renderPoint(point));
   }
 
@@ -189,6 +177,8 @@ export default class BoardPresenter {
   }
 
   #renderNoPoints() {
+    const filterType = this.#filterModel.filter;
+    this.#noPointComponent = new NoPointView({ filterType }); // Создаем экземпляр компонента
     render(
       this.#noPointComponent,
       this.#boardComponent.element,
@@ -200,7 +190,6 @@ export default class BoardPresenter {
     this.#pointPresenters.forEach((presenter) => presenter.destroy());
     this.#pointPresenters.clear();
     this.#eventListComponent.element.innerHTML = ""; // если нужно явно очистить DOM
-    console.log("pointPresenters ", this.#pointPresenters);
     remove(this.#loadMoreButtonComponent);
   }
 
@@ -212,7 +201,6 @@ export default class BoardPresenter {
     );
 
     render(this.#eventListComponent, this.#boardComponent.element);
-    // console.log(points);
 
     this.#renderPoints(points);
     // Если остались ещё точки — показываем кнопку "Загрузить ещё"

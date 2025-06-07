@@ -30,7 +30,6 @@ function createSelectedOffersTemplate(offers) {
 function createListTemplate(point) {
   const { type, destination, dateFrom, dateTo, basePrice, offers, isFavorite } =
     point;
-  //   console.log(point);
 
   const date = humanizeEventDueDate(dateFrom);
   const timeStart = humanizeEventTime(dateFrom);
@@ -89,9 +88,6 @@ export default class ListView extends AbstractView {
     this.#point = point;
     this.#handleEditClick = onEditClick;
     this.#handleFavoriteClick = onFavoriteClick;
-    console.log(
-      `ListView CREATED FOR POINT ID: [${this.#point.id}]. Attaching handler.`
-    );
 
     this.element
       .querySelector(".card__btn--edit")

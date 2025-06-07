@@ -30,7 +30,6 @@ export default class FilterPresenter {
 
   init() {
     const filters = this.filters;
-    console.log(filters, this.#filterModel.filter);
 
     const prevFilterComponent = this.#filterComponent;
 
@@ -50,8 +49,6 @@ export default class FilterPresenter {
   }
 
   #handleModelEvent = () => {
-    console.log(999);
-
     this.init();
   };
 

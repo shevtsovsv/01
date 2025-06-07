@@ -1,11 +1,10 @@
-import { getRandomPoint, getLengthPoints } from "../mock/points.js";
 import OffersModel from "./offers-model.js";
 import DestinationModel from "./destination-model.js";
 import Observable from "../framework/observable.js";
+import { UpdateType } from "../const.js";
 
 export default class PointModel extends Observable {
-  //   rezult = {};
-  #points = null;
+  #points = [];
   #offersModel = null;
   #destinationModel = null;
   #tasksApiService = null;
@@ -14,14 +13,19 @@ export default class PointModel extends Observable {
     super();
     this.#offersModel = new OffersModel();
     this.#destinationModel = new DestinationModel();
-    // this.#points = Array.from({ length: getLengthPoints() }, () =>
-    //   this.#createPoint()
-    // );
     this.#tasksApiService = tasksApiService;
-    console.log(this.#tasksApiService);
-    this.#tasksApiService.points.then((points) => {
-      console.log(points.map(this.#adaptToClient));
-    });
+  }
+
+  async init() {
+    try {
+      const points = await this.#tasksApiService.points;
+      this.#points = points.map(this.#adaptToClient);
+      this.#points = this.#points.map(this.#createPoint);
+      console.log(this.#points);
+    } catch (err) {
+      this.#points = [];
+    }
+    this._notify(UpdateType.INIT);
   }
 
   #adaptToClient(point) {
@@ -48,13 +52,21 @@ export default class PointModel extends Observable {
     return adaptedPoint;
   }
 
-  #createPoint(rawPoint) {
-    const tempPoint = rawPoint || getRandomPoint();
+  #createPoint = (rawPoint) => {
+    const tempPoint = rawPoint;
+    console.log(
+      this.#destinationModel.getDestinationById(tempPoint.destination)
+    );
+
     const destination =
       tempPoint != undefined
         ? this.#destinationModel.getDestinationById(tempPoint.destination)
         : null; // Лучше null, чем ""
     const allOffersForType = this.#offersModel.getOffersByType(tempPoint.type);
+    console.log(
+      tempPoint.type,
+      this.#offersModel.getOffersByType(tempPoint.type)
+    );
 
     // Получаем массив объектов выбранных офферов
     const offers = (allOffersForType ?? []).filter((offer) =>
@@ -68,7 +80,7 @@ export default class PointModel extends Observable {
       allOffersForType,
       offers, // Это массив объектов, а не ID
     };
-  }
+  };
 
   // ----------------------7.3-------------------------------
   updatePoint(updateType, update) {

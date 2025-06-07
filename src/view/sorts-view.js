@@ -56,8 +56,6 @@ export default class SortsView extends AbstractView {
     const sortType = sortItem.dataset.sortType;
 
     if (sortType) {
-      console.log(sortType);
-
       this.#handleSortTypeChange(sortType);
     }
   };
