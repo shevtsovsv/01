@@ -83,25 +83,18 @@ export default class PointModel extends Observable {
   };
 
   // ----------------------7.3-------------------------------
-  updatePoint(updateType, update) {
+  async updatePoint(updateType, update) {
     const index = this.#points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
       throw new Error("Can't update unexisting point");
     }
 
-    // 'update' от "Favorite" уже "обогащен" (destination - это объект).
-    // 'update' от формы - "сырой" (destination - это ID/строка).
-    // Мы должны обрабатывать оба случая.
+    let finalUpdate = update;
 
-    let finalUpdate = update; // По умолчанию считаем, что данные уже готовы
-
-    // Если destination - это строка, значит, данные "сырые" и их нужно обогатить.
-    // (Добавляем проверку на null на случай, если точка новая и без пункта назначения)
     if (typeof update.destination === "string" || update.destination === null) {
       finalUpdate = this.#createPoint(update);
     }
-    // Если же destination - это объект, мы просто используем `update` как есть (finalUpdate).
 
     this.#points = [
       ...this.#points.slice(0, index),
@@ -110,6 +103,18 @@ export default class PointModel extends Observable {
     ];
 
     this._notify(updateType, finalUpdate);
+    // try {
+    //   const response = await this.#tasksApiService.updatePoint(finalUpdate);
+    //   //   const updatedPoint = this.#adaptToClient(response);
+    //   this.#points = [
+    //     ...this.#points.slice(0, index),
+    //     updatedPoint,
+    //     ...this.#points.slice(index + 1),
+    //   ];
+    //   this._notify(updateType, updatedPoint);
+    // } catch (err) {
+    //   throw new Error("Can't update point");
+    // }
   }
 
   addPoint(updateType, update) {
